@@ -1,0 +1,75 @@
+#:kivy 1.11.1
+#:import FrameLogger rocket_ground_station.components.frame_logger
+
+<FrameLogger>:
+    orientation: 'vertical'
+    logs: logs
+
+    MDBoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: None
+        height: dp(62)
+        padding: [0, dp(10), dp(10), 0]
+        MDBoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(52)
+            spacing: dp(25)
+            padding: dp(5)
+            radius: [dp(5),]
+            md_bg_color: app.theme_cls.bg_light
+
+            SpaceTipLabel:
+                text: 'Services:'
+                halign: 'center'
+            SpaceSwitch:
+                active: root.log_services
+                on_active: root.log_services = self.active
+            SpaceTipLabel:
+                text: 'Requests:'
+                halign: 'center'
+            SpaceSwitch:
+                active: root.log_requests
+                on_active: root.log_requests = self.active
+            SpaceTipLabel:
+                text: 'Schedules:'
+                halign: 'center'
+            SpaceSwitch:
+                active: root.log_schedules
+                on_active: root.log_schedules = self.active
+            SpaceTipLabel:
+                text: 'Feeds:'
+                halign: 'center'
+            SpaceSwitch:
+                active: root.log_feeds
+                on_active: root.log_feeds = self.active
+            SpaceSecondaryButton:
+                icon: 'filter'
+                text: 'FILTER'
+                on_press: root.filter()
+            SpaceSecondaryButton:
+                icon: 'trash-can'
+                text: 'CLEAR'
+                on_press: root.clear()
+
+    ScrollView:
+        effect_cls: 'ScrollEffect'
+        do_scroll_x: False
+        do_scroll_y: True
+        bar_width: 15
+        scroll_type: ['bars', 'content']
+        scroll_wheel_distance: 40
+        scroll_timeout: 250
+        scroll_distance: 10
+        SpaceLabel:
+            text: ''
+            id: logs
+            size_hint_y: None
+            size: self.texture_size
+            text_size: self.width, None
+            height: self.texture_size[1]
+            padding: 10, 10
+            valign: 'top'
+            halign: 'left'
+            color: app.theme_cls.primary_color
+            markup: True

@@ -1,0 +1,30 @@
+#:kivy 2.1.0
+
+
+<DeviceSelector>:
+    orientation: 'vertical'
+    devices_container: devices_scroll_view.container
+    select_all_checkbox: select_all_checkbox
+
+    MDBoxLayout:
+        size_hint_y: None
+        height: dp(56)
+        orientation:'horizontal'
+        SpaceTableHeaderLabel:
+            text: 'NAME'
+        SpaceTableHeaderLabel:
+            text: 'TYPE'
+        SpaceTableHeaderLabel:
+            text: 'ID'
+        SpaceCheckbox:
+            id: select_all_checkbox
+            active: True
+            on_active: root.select_all(self.active)
+            checking: False
+    SpaceScrollView:
+        id: devices_scroll_view
+        bar_width: 15
+        scroll_type: ['bars', 'content']
+        scroll_wheel_distance: 40
+        scroll_timeout: 250
+        scroll_distance: 10

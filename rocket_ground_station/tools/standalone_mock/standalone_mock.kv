@@ -1,0 +1,143 @@
+#:kivy 2.1.0
+#:include rocket_ground_station/layouts/buttons/space_primary_button.kv
+#:include rocket_ground_station/layouts/space_text_field.kv
+#:include rocket_ground_station/layouts/space_checkbox.kv
+#:include rocket_ground_station/layouts/space_dropdown.kv
+#:include rocket_ground_station/layouts/space_dropdown_item.kv
+#:include rocket_ground_station/layouts/labels.kv
+
+#:include rocket_ground_station/layouts/buttons/space_service_button.kv
+#:include rocket_ground_station/layouts/buttons/space_icon_button.kv
+
+#:include rocket_ground_station/layouts/connection_button.kv
+#:import ConnectionSwitch rocket_ground_station.components.connection_button
+
+<MainScreen>:
+    connection_type_dropdown: connection_type_dropdown
+
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        spacing: 10
+
+        # DropDown for selecting which column to display
+        MDBoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: '40dp'
+
+            SpaceDropdown:
+                id: connection_type_dropdown
+                size_hint_x: 0.7
+                text: "Select Connection Type"
+
+        # Container to hold either TCP or Serial column
+        MDBoxLayout:
+            id: column_container
+            orientation: 'horizontal'
+            padding: 10
+            spacing: 10
+
+
+<TransportColumn>:
+    hardware_dropdown: hardware_dropdown
+    feed_interval: feed_interval
+    content: content
+    no_print: no_print
+    connect_button: connect_button
+    connection_icon: connection_icon
+    icon_failure_color: (1, 0, 0, 1)
+    icon_success_color: (0, 1, 0, 1)
+    icon_default_color: (0, 0, 0, 1)
+
+    MDBoxLayout:
+        id: content
+        orientation: 'vertical'
+
+    MDBoxLayout:
+        orientation: 'horizontal'
+
+        SpaceLabel:
+            text: 'Select hardware config :'
+            size_hint_x: 0.3
+        SpaceDropdown:
+            id: hardware_dropdown
+            size_hint_x: 0.7
+
+
+    SpaceTextField:
+        id: feed_interval
+        text: '1'
+        hint_text: 'Feed Interval (s)'
+        multiline: False
+        input_filter: 'float'
+
+    MDBoxLayout:
+        orientation: 'horizontal'
+        padding: 10
+        spacing: 10
+        SpaceTitleLabel:
+            text: 'No Print:'
+        SpaceCheckbox:
+            id: no_print
+
+    MDBoxLayout:
+        orientation: 'horizontal'
+        spacing: 10
+        size_hint_x: None
+        width: self.minimum_width
+        pos_hint: {'center_x': 0.5}
+
+        SpacePrimaryButton:
+            id: connect_button
+            text: 'Connect'
+            size_hint_x: None
+            width: 150
+
+        SpaceIconButton:
+            icon: 'power-plug'
+            id: connection_icon
+            theme_icon_color: "Custom"
+            icon_color: (1,0,0,1)
+
+
+
+<TCPColumnContent>:
+    proxy_address: proxy_address
+    proxy_port: proxy_port
+
+    SpaceTextField:
+        id: proxy_address
+        text: '127.0.0.1'
+        hint_text: 'Proxy Address'
+        multiline: False
+
+    SpaceTextField:
+        id: proxy_port
+        text: '3001'
+        hint_text: 'Proxy Port'
+        multiline: False
+        input_filter: 'int'
+
+<SerialColumnContent>:
+    port_dropdown: port_dropdown
+    baud_dropdown: baud_dropdown
+    MDBoxLayout:
+        orientation: 'horizontal'
+
+        SpaceLabel:
+            text: 'Select port :'
+            size_hint_x: 0.3
+        SpaceDropdown:
+            id: port_dropdown
+            size_hint_x: 0.7
+
+    MDBoxLayout:
+        orientation: 'horizontal'
+
+        SpaceLabel:
+            text: 'Select baudrate :'
+            size_hint_x: 0.3
+        SpaceDropdown:
+            id: baud_dropdown
+            size_hint_x: 0.7

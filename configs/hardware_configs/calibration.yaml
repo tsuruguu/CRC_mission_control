@@ -1,0 +1,128 @@
+devices:
+  servo:
+    bypass:
+      open_pos: 1000
+      closed_pos: 0
+      board: "kromek"
+      device_id: 0
+    tank:
+      open_pos: 1000
+      closed_pos: 0
+      board: "kromek"
+      device_id: 1
+    vent:
+      open_pos: 1000
+      closed_pos: 0
+      board: "kromek"
+      device_id: 2
+  relay:
+    first:
+      board: "kromek"
+      device_id: 0
+    second:
+      board: "kromek"
+      device_id: 1
+    third:
+      board: "kromek"
+      device_id: 2
+    fourth:
+      board: "kromek"
+      device_id: 3
+    sixth:
+      board: "kromek"
+      device_id: 5
+  # dynamixel:
+  #   main_valve:
+  #     board: "kromek"
+  #     device_id: 0
+  #     closed_pos: 0
+  #     open_pos: 1
+  scheduler:
+    scheduler:
+      board: "kromek"
+      device_id: 0
+      # Feature is broken in the hardware, It's permanently set to False in software until fixed
+      # Changing this parameter won't do anything
+      close_on_finish: false
+  igniter:
+    igniter:
+      burntime: 1
+      board: "kromek"
+      device_id: 0
+  flash:
+    flash:
+      board: "kromek"
+      device_id: 0
+  sensor:
+    test_sensor0:
+      board: "kromek"
+      device_id: 0
+      data_type: "float"
+      recording: off
+      units: "Ns"
+      scale: 1e3
+      a: 1
+      b: 0
+    test_sensor1:
+      board: "kromek"
+      device_id: 1
+      data_type: "float"
+      recording: off
+      units: "Ns"
+      scale: 1e3
+      a: 1
+      b: 0
+    test_sensor2:
+      board: "kromek"
+      device_id: 2
+      data_type: "float"
+      recording: off
+      units: "Ns"
+      scale: 1e3
+      a: 1
+      b: 0
+    test_sensor3:
+      board: "kromek"
+      device_id: 3
+      data_type: "float"
+      recording: off
+      units: "Ns"
+      scale: 1e3
+      a: 1
+      b: 0
+    test_sensor4:
+      board: "kromek"
+      device_id: 4
+      data_type: "float"
+      recording: off
+      units: "Ns"
+      scale: 1e3
+      a: 1
+      b: 0
+    test_sensor5:
+      board: "kromek"
+      device_id: 5
+      data_type: "float"
+      recording: off
+      units: "Ns"
+      scale: 1e3
+      a: 1
+      b: 0
+    test_sensor6:
+      board: "kromek"
+      device_id: 6
+      data_type: "float"
+      recording: off
+      units: "Ns"
+      scale: 1e3
+      a: 1
+      b: 0
+    test_sensor7:
+      board: "kromek"
+      device_id: 7
+      data_type: "float"
+      recording: off
+      units: "Ns"
+      scale: 1e3
+      a: 1
+      b: 0

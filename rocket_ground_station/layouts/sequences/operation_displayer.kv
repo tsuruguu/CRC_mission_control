@@ -1,0 +1,20 @@
+#:kivy 2.1.0
+
+
+<OperationDisplayer>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: dp(52)
+    spacing: dp(20)
+    padding: dp(5)
+
+    SpaceTableEntryLabel:
+        text: root.device_type
+    SpaceTableEntryLabel:
+        text: root.device_name
+    SpaceTableEntryLabel:
+        text: root.operation_name
+    SpaceTableEntryLabel:
+        text: root.starts_after
+    SpaceTableEntryLabel:
+        text: root.payload

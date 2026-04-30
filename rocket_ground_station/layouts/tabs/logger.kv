@@ -1,0 +1,56 @@
+#:kivy 2.1.0
+#:import LogLevel rocket_ground_station.core.communication.ids.LogLevel
+
+<Logger>:
+    orientation: 'vertical'
+    logs: logs
+    log_level_dropdown: log_level_dropdown
+
+    MDBoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: None
+        height: dp(62)
+        padding: [dp(10), dp(10), dp(10), 0]
+
+        MDBoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(52)
+            spacing: dp(25)
+            padding: dp(5)
+            radius: [dp(5),]
+            md_bg_color: app.theme_cls.bg_light
+
+            SpaceTitleLabel:
+                size_hint_x: 0.5
+                text: 'Ground Station Logs'
+
+            SpaceTipLabel:
+                size_hint_x: 0.1
+                text: 'Log level:'
+
+            SpaceDropdown:
+                id: log_level_dropdown
+                text: root.log_level.name
+                on_select: root.log_level = LogLevel[args[1]]
+
+
+    ScrollView:
+        effect_cls: 'ScrollEffect'
+        do_scroll_x: False
+        do_scroll_y: True
+        bar_width: 15
+        scroll_type: ['bars', 'content']
+        scroll_wheel_distance: 30
+        scroll_timeout: 250
+        scroll_distance: 10
+        SpaceLabel:
+            text: ''
+            id: logs
+            size_hint_y: None
+            text_size: self.width, None
+            height: self.texture_size[1]
+            padding: 10, 10
+            valign: 'top'
+            halign: 'left'
+            markup: True

@@ -1,0 +1,100 @@
+devices:
+  sensor:
+    Chamber:
+      hydro_name: "Chamber"
+      a: 1.237490589
+      b: 6993.041276
+      board: kromek
+      round_to: 2
+      data_type: float
+      device_id: 8
+      recording: false
+      scale: 1e3
+      units: mB
+      snapshotting: true
+      data_filter_name: MovingAverage
+      data_filter_args:
+        buffer_length: 50
+    Ext tank Ox mass:
+      a: 39.89014
+      b: -10.9894
+      board: kromek
+      data_type: float
+      device_id: 4
+      recording: false
+      round_to: 2
+      scale: 1
+      units: kg
+      snapshotting: true
+    Ext tank Ox(wika7sil):
+      hydro_name: "Ext tank Ox"
+      a: 28.14917943
+      b: -24.55715293
+      board: kromek
+      data_type: float
+      device_id: 2
+      recording: false
+      round_to: 2
+      scale: 1
+      units: B
+      snapshotting: true
+    Manifold Ox(wika red):
+      hydro_name: "ManifoldOx"
+      a: 17.56415
+      b: -15.78677
+      board: kromek
+      data_type: float
+      device_id: 6
+      recording: false
+      round_to: 2
+      scale: 1
+      units: B
+      snapshotting: true
+    Manifold fuel(wika black):
+      hydro_name: "ManifoldFuel"
+      a: 16.99701103
+      b: -14.88647753
+      board: kromek
+      data_type: float
+      round_to: 2
+      device_id: 0
+      recording: false
+      scale: 1
+      units: B
+      snapshotting: true
+    PV Ox (kulite):
+      hydro_name: "PVOx"
+      a: 28.08283752
+      b: -25.51150163
+      board: kromek
+      round_to: 2
+      data_type: float
+      device_id: 5
+      recording: false
+      scale: 1
+      units: B
+      snapshotting: true
+    PV fuel (wika 51vent/gora):
+      hydro_name: "PVFuel"
+      a: 28.29600219
+      b: -24.88724796
+      board: kromek
+      round_to: 2
+      data_type: float
+      device_id: 1
+      recording: false
+      scale: 1
+      units: B
+      snapshotting: true
+    R0cket mass(tenso):
+      hydro_name: "tenso_visual"
+      a: 22.05414
+      b: -0.43129
+      board: kromek
+      data_type: float
+      device_id: 3
+      recording: false
+      round_to: 2
+      scale: 1
+      units: kg
+      snapshotting: true

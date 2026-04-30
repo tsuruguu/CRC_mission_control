@@ -1,0 +1,57 @@
+#:kivy 2.1.0
+
+
+<OperationEditor>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: dp(52)
+    spacing: dp(20)
+    padding: dp(5)
+
+    device_type_dropdown: device_type_dropdown
+    device_name_dropdown: device_name_dropdown
+    operation_dropdown: operation_dropdown
+    starts_after_input: starts_after_input
+    payload_input: payload_input
+
+    SpaceDropdown:
+        id: device_type_dropdown
+        size_hint_x: 1
+        on_select: root.set_device_type(args[1])
+    SpaceDropdown:
+        id: device_name_dropdown
+        size_hint_x: 1
+        on_select: root.set_device_name(args[1])
+    SpaceDropdown:
+        id: operation_dropdown
+        size_hint_x: 1
+        on_select: root.set_operation_name(args[1])
+    SpaceTextField:
+        id: starts_after_input
+        size_hint_x: 1
+        on_focus: root.set_starts_after(self.text if not args[1] else str(root._operation.starts_after))
+        halign: 'center'
+    SpaceTextField:
+        id: payload_input
+        size_hint_x: 1
+        on_focus: root.set_payload(self.text if not args[1] else str(root._operation.payload))
+        halign: 'center'
+    MDBoxLayout:
+        orientation:'horizontal'
+        size_hint_x: 1
+        SpaceIconButton:
+            icon: 'menu-up'
+            text_color: app.theme_cls.primary_light
+            on_release: root.dispatch('on_move_up')
+        SpaceIconButton:
+            icon: 'menu-down'
+            text_color: app.theme_cls.primary_light
+            on_release: root.dispatch('on_move_down')
+        SpaceIconButton:
+            icon: 'close'
+            text_color: app.theme_cls.primary_light
+            on_release: root.dispatch('on_remove')
+        SpaceIconButton:
+            icon: "plus-thick"
+            text_color: app.theme_cls.primary_light
+            on_release: root.dispatch('on_duplicate')

@@ -1,0 +1,364 @@
+devices:
+  dynamixel:
+    Fill Ox:
+      hydro_name: "FOV"
+      board: kromek
+      closed_pos: 1200
+      device_id: 4
+      open_pos: 3350
+      velocity: 100
+      snapshotting: true
+    Fill fuel:
+      hydro_name: "FFV"
+      board: kromek
+      closed_pos: 900
+      device_id: 5
+      open_pos: 3000
+      velocity: 100
+      snapshotting: true
+    Main Ox:
+      hydro_name: "MOV"
+      board: kromek
+      closed_pos: 0
+      device_id: 3
+      open_pos: 2000
+      velocity: 100
+      snapshotting: true
+    Main fuel:
+      hydro_name: "MFV"
+      board: kromek
+      closed_pos: 1600
+      device_id: 1
+      open_pos: 3400
+      velocity: 100
+      snapshotting: true
+    Vent Ox:
+      hydro_name: "VOV"
+      board: kromek
+      closed_pos: 2250
+      device_id: 2
+      open_pos: 150
+      velocity: 100
+      snapshotting: true
+    Vent fuel:
+      hydro_name: "VFV"
+      board: kromek
+      closed_pos: 450
+      device_id: 6
+      open_pos: 2550
+      velocity: 100
+      snapshotting: true
+  flash:
+    flash:
+      board: kromek
+      device_id: 0
+  piston:
+    Piston position:
+      hydro_name: "Piston"
+      a: 1
+      b: 0
+      board: kromek
+      data_type: float
+      device_id: 31
+      max_val: 100
+      min_val: 0
+      recording: false
+      round_to: 2
+      scale: 1e-1
+      units: "%"
+      length_units: "mm"
+      volume_units: "ml"
+      display_length: true
+      display_volume: true
+      show_fuel_volume: false
+      length: 996
+      volume: 27710.5
+      max_percentage_safe_val: 100
+      min_percentage_safe_val: 40
+      snapshotting: true
+  relay:
+    Load Ox:
+      hydro_name: "LOV"
+      board: kromek
+      device_id: 4
+    Unload Ox:
+      hydro_name: "UOV"
+      board: kromek
+      device_id: 3
+    Load fuel:
+      hydro_name: "LFV"
+      board: kromek
+      device_id: 5
+    Unload fuel:
+      hydro_name: "UFV"
+      board: kromek
+      device_id: 2
+    xd:
+      board: kromek
+      device_id: 6
+  scheduler:
+    Scheduler:
+      hydro_name: "scheduler_visual"
+      board: broadcast
+      # Feature is broken in the hardware, It's permanently set to False in software until fixed
+      # Changing this parameter won't do anything
+      close_on_finish: false
+      device_id: 0
+      expect_acks_from:
+        - kromek
+  sensor:
+    Chamber:
+      hydro_name: "Chamber"
+      a: 1.237490589
+      b: 6993.041276
+      board: kromek
+      data_type: float
+      device_id: 8
+      recording: false
+      scale: 1e3
+      units: mB
+      snapshotting: true
+      data_filter_name: MovingAverage
+      data_filter_args:
+        buffer_length: 50
+    Ext tank Ox mass:
+      a: 39.89014
+      b: -10.9894
+      board: kromek
+      data_type: float
+      device_id: 4
+      recording: false
+      round_to: 2
+      scale: 1
+      units: kg
+      snapshotting: true
+    Ext tank Ox(wika7sil):
+      hydro_name: "Ext tank Ox"
+      a: 28.14917943
+      b: -24.55715293
+      board: kromek
+      data_type: float
+      device_id: 2
+      recording: false
+      scale: 1
+      units: B
+      snapshotting: true
+    Manifold Ox(wika red):
+      hydro_name: "ManifoldOx"
+      a: 17.56415
+      b: -15.78677
+      board: kromek
+      data_type: float
+      device_id: 6
+      recording: false
+      scale: 1
+      units: B
+      snapshotting: true
+    Manifold fuel(wika black):
+      hydro_name: "ManifoldFuel"
+      a: 16.99701103
+      b: -14.88647753
+      board: kromek
+      data_type: float
+      device_id: 0
+      recording: false
+      scale: 1
+      units: B
+      snapshotting: true
+    PV Ox (kulite):
+      hydro_name: "PVOx"
+      a: 28.08283752
+      b: -25.51150163
+      board: kromek
+      data_type: float
+      device_id: 5
+      recording: false
+      scale: 1
+      units: B
+      snapshotting: true
+    PV fuel (wika 51vent/gora):
+      hydro_name: "PVFuel"
+      a: 28.29600219
+      b: -24.88724796
+      board: kromek
+      data_type: float
+      device_id: 1
+      recording: false
+      scale: 1
+      units: B
+      snapshotting: true
+    R0cket mass(tenso):
+      hydro_name: "tenso_visual"
+      a: 22.05414
+      b: -0.43129
+      board: kromek
+      data_type: float
+      device_id: 3
+      recording: false
+      round_to: 2
+      scale: 1
+      units: kg
+      snapshotting: true
+    DummyTenso1:
+      a: 1
+      b: 0
+      board: kromek
+      data_type: float
+      device_id: 15
+      recording: false
+      round_to: 2
+      scale: 1
+      units: kg
+      snapshotting: true
+    DummyTenso2:
+      a: 1
+      b: 0
+      board: kromek
+      data_type: float
+      device_id: 16
+      recording: false
+      round_to: 2
+      scale: 1
+      units: kg
+      snapshotting: true
+    DummyTenso3:
+      a: 1
+      b: 0
+      board: kromek
+      data_type: float
+      device_id: 17
+      recording: false
+      round_to: 2
+      scale: 1
+      units: kg
+      snapshotting: true
+  heatinglamp:
+    Lamp1:
+      dependencies:
+        pressure_sensor: PV Ox (kulite)
+      target_pressure: 50
+      margin: 0.5
+      board: kromek
+      device_id: 0
+  multisensor:
+    TensoSum:
+      dependencies:
+        aggregate:
+          - DummyTenso1
+          - DummyTenso2
+          - DummyTenso3
+      a: 1
+      b: 0
+      board: kromek
+      data_type: float
+      device_id: 18
+      recording: false
+      round_to: 2
+      scale: 1
+      units: kg
+      snapshotting: true
+      # Here is the code to apply custom scaling on top of the a and b scaling values
+      # If you want to do all of scaling using the below method then just set a to 1 and b to 0
+      # Also set the scale to 1
+      # Then type in the custom scaling expression
+      # x is the current value of a sensor that is to be scaled
+      # you also have access to the math module, so you can type: math.pow(x, 2) for example
+      # Yes it's an eval under the hood, yes it's cursed, but it works
+      data_filter_name: CustomExpression
+      data_filter_args:
+        expression: 1 * x + 0
+
+sequences:
+  sekwencja_fuel:
+    - device_name: flash
+      device_type: flash
+      operation: start_logging
+      payload: 0
+      starts_after: 1000
+    - device_name: Main fuel
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 2000
+    - device_name: Main fuel
+      device_type: dynamixel
+      operation: close
+      payload: 0
+      starts_after: 2000
+    - device_name: flash
+      device_type: flash
+      operation: stop_logging
+      payload: 0
+      starts_after: 4000
+  sekwencja_ox:
+    - device_name: flash
+      device_type: flash
+      operation: start_logging
+      payload: 0
+      starts_after: 1000
+    - device_name: Main Ox
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 2000
+    - device_name: Main Ox
+      device_type: dynamixel
+      operation: close
+      payload: 0
+      starts_after: 3000
+    - device_name: flash
+      device_type: flash
+      operation: stop_logging
+      payload: 0
+      starts_after: 5000
+  sekwencja_ox+fuel:
+    - device_name: flash
+      device_type: flash
+      operation: start_logging
+      payload: 0
+      starts_after: 1000
+    - device_name: Main Ox
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 0
+    - device_name: Main fuel
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 0
+    - device_name: Main Ox
+      device_type: dynamixel
+      operation: close
+      payload: 0
+      starts_after: 3000
+    - device_name: Main fuel
+      device_type: dynamixel
+      operation: close
+      payload: 0
+      starts_after: 0
+    - device_name: flash
+      device_type: flash
+      operation: stop_logging
+      payload: 0
+      starts_after: 5000
+  test:
+    - device_name: flash
+      device_type: flash
+      operation: start_logging
+      payload: 0
+      starts_after: 1000
+    - device_name: flash
+      device_type: flash
+      operation: stop_logging
+      payload: 0
+      starts_after: 5000
+view_profiles:
+  - profile_name: Profile_1
+    device_names:
+      - Fill Ox
+      - Chamber
+  - profile_name: Profile_2
+    device_names:
+      - Manifold fuel(wika black)
+      - Load Ox

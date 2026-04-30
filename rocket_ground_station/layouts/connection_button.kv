@@ -1,0 +1,25 @@
+#:kivy 2.1.0
+
+<ConnectionButton>:
+    orientation: 'horizontal'
+    spacing: dp(20)
+    padding: dp(0) 
+    size_hint_x: 1
+    icon_button: icon_button
+    label: label
+
+    icon_failure_color: (1, 0, 0, 1)
+    icon_success_color: (0, 1, 0, 1)
+    icon_initial_color: app.theme_cls.text_color 
+
+    SpaceLabel: 
+        id: label
+        text: 'CONN:'
+        size_hint_x: 0.7
+        
+    SpaceIconButton:
+        id: icon_button 
+        size_hint_x: 0.3
+        theme_icon_color: 'Custom'
+        icon: 'power-plug-off'
+        

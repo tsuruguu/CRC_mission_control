@@ -1,0 +1,12 @@
+#:kivy 2.1.0
+# Generic description of scroll view. All scrollview content should be placed in container
+<SpaceScrollView@ScrollView>:
+    container: container
+    effect_cls: 'ScrollEffect'
+    padding: [dp(5), dp(5), dp(50), dp(5)]
+
+    MDList:
+        id: container
+        orientation: 'lr-tb'
+        size_hint_y: None
+        height: self.minimum_height

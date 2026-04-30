@@ -1,0 +1,28 @@
+dark_mode: true
+default_hardware_config: agatka.yaml
+font_name: space
+fullscreen: false
+# For smaller screens set below values both to 0.8
+# Those values work well for screens of size 1366x768 or bigger
+font_scale: 1
+card_scale: 1
+log_level: INFO
+log_to_file_dt: 0.0
+log_to_frame_file_dt: 0.0
+receive_dt: 0.0
+save_frames_to_file: true
+save_logs_to_file: true
+send_dt: 0.2
+sequence_expire_time: 10.0
+max_receive_batch_size: 50
+max_send_batch_size: 50
+integrated_mock_feed_send_rate: 2
+dynamixel_reset_sync_delay: 5
+keepalive_interval: 9999999999
+snapshot_step_interval: 0.1 #in seconds
+tabs:
+  - communication
+  - hardware
+  - sequences
+  - logger
+  - hydraulics

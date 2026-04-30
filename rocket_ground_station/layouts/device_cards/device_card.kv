@@ -1,0 +1,43 @@
+#:kivy 2.1.0
+
+
+<DeviceCard>:
+    orientation: 'horizontal'
+    size_hint: None, None
+    size: dp(300), dp(160)
+    padding: [dp(15), dp(5), dp(15), dp(15)]
+    spacing: dp(5)
+    radius: [dp(5),]
+    md_bg_color: app.theme_cls.bg_light
+    content: content
+    arm_button: arm_button
+    synchronize_button: synchronize_button
+    top_bar: top_bar
+
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_x: 1
+        spacing: dp(10)
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.2
+            id: top_bar
+            SpaceLabel:
+                text: root.device_widget.name if root.device_widget is not None else 'Device'
+                size_hint_x: 0.7
+                font_style: 'H6'
+            SelectiveArmingButton:
+                device_widget: root.device_widget
+                id: arm_button
+                cycle_device_arm_method: root._cycle_device_arm_state if root is not None else None
+            SyncIndicatorButton:
+                size_hint_x: 0.2
+                device_widget: root.device_widget
+                id: synchronize_button
+                synchronize_method: root.device_widget.synchronize if root.device_widget is not None else None
+        BoxLayout:
+            id: content
+            size_hint_y: 0.8
+            orientation: 'vertical'
+            spacing: dp(10)

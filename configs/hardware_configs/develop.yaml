@@ -1,0 +1,85 @@
+devices:
+  servo:
+    left:
+      open_pos: 120
+      closed_pos: 500
+      board: "staszek"
+      device_id: 0
+    right:
+      open_pos: 120
+      closed_pos: 500
+      board: "staszek"
+      device_id: 1
+    xd:
+      open_pos: 120
+      closed_pos: 500
+      board: "staszek"
+      device_id: 2
+    xdd:
+      open_pos: 120
+      closed_pos: 500
+      board: "staszek"
+      device_id: 3
+  relay:
+    first:
+      board: "kromek"
+      device_id: 0
+    second:
+      board: "kromek"
+      device_id: 1
+  dynamixel:
+    main_valve:
+      board: "staszek"
+      device_id: 0
+      closed_pos: 0
+      open_pos: 500
+      velocity: 100
+  scheduler:
+    scheduler:
+      board: "broadcast"
+      device_id: 0
+      # Feature is broken in the hardware, It's permanently set to False in software until fixed
+      # Changing this parameter won't do anything
+      close_on_finish: false
+  igniter:
+    igniter:
+      burntime: 1
+      board: "kromek"
+      device_id: 0
+  flash:
+    flash:
+      board: "staszek"
+      device_id: 0
+  sensor:
+    test_sensor:
+      board: "staszek"
+      device_id: 0
+      data_type: "float"
+      recording: off
+      units: "Ns"
+      scale: 1e3
+      a: 10
+      b: 100
+  piston:
+    test_piston:
+      min_val: 0
+      max_val: 100
+      board: "kromek"
+      device_id: 2
+      data_type: "float"
+      recording: off
+      scale: 1
+      a: 0.8
+      b: 50
+      round_to: 2
+      units: '%'
+      length_units: 'mm'
+      volume_units: 'ml'
+      length: 996
+      volume: 27710.5
+      max_percentage_safe_val: 100
+      min_percentage_safe_val: 40
+  recovery:
+    test_recovery:
+      board: "staszek"
+      device_id: 0

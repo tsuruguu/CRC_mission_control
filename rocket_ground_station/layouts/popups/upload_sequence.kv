@@ -1,0 +1,28 @@
+#:kivy 2.1.0
+
+<UploadSequenceContent>:
+    upload_bar: upload_bar
+    operation_label: operation_label
+    frame_count_label: frame_count_label
+
+    orientation: 'vertical'
+    spacing: dp(5)
+    padding: dp(25)
+
+    MDProgressBar:
+        id: upload_bar
+        size_hint_y: 0.6
+        value: 0
+        color: app.theme_cls.primary_color
+    MDBoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: 0.4
+
+        SpaceLabel:
+            id: operation_label
+            size_hint_x: 0.8
+            text: ''
+        SpaceTipLabel:
+            id: frame_count_label
+            size_hint_x: 0.2
+            text: ''

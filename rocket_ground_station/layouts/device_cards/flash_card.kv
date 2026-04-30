@@ -1,0 +1,31 @@
+#:kivy 2.1.0
+#: import AckStatus rocket_ground_station.core.communication.ids.AckStatus
+
+
+<FlashCard>:
+    orientation: 'vertical'
+    spacing: dp(5)
+    start_button: start_button
+    stop_button: stop_button
+    erase_button: erase_button
+
+    SpaceServiceButton:
+        id: start_button
+        text: 'START'
+        size_hint_y: 0.3
+        ack_state: root.flash_widget.ack_states['START'] if root.flash_widget is not None else AckStatus.READY
+        callback: root.flash_widget.start_logging if root.flash_widget is not None else lambda cb: None
+
+    SpaceServiceButton:
+        id: stop_button
+        text: 'STOP'
+        size_hint_y: 0.3
+        ack_state: root.flash_widget.ack_states['STOP'] if root.flash_widget is not None else AckStatus.READY
+        callback: root.flash_widget.stop_logging if root.flash_widget is not None else lambda cb: None
+
+    SpaceServiceButton:
+        id: erase_button
+        text: 'ERASE'
+        size_hint_y: 0.3
+        ack_state: root.flash_widget.ack_states['ERASE'] if root.flash_widget is not None else AckStatus.READY
+        callback: root.flash_widget.erase if root.flash_widget is not None else lambda cb: None

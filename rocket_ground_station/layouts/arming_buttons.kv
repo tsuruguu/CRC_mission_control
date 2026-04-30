@@ -1,0 +1,20 @@
+#:kivy 2.1.0
+
+<ArmingButtons>:
+    orientation: 'horizontal'
+    spacing: dp(20)
+    padding: dp(0)
+    size_hint_x: 1
+
+    SpacePrimaryButton:
+        id: button
+        text: 'ARM & SYNC'
+        size_hint_x: 0.5
+        on_press: root._arm_hardware()
+        
+    SpacePrimaryButton:
+        id: button
+        text: 'DISARM'
+        size_hint_x: 0.5
+        on_press: root._disarm_hardware()
+        

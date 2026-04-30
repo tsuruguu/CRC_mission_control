@@ -1,0 +1,36 @@
+#:kivy 2.1.0
+#: import AckStatus rocket_ground_station.core.communication.ids.AckStatus
+
+
+<IgniterCard>:
+    orientation: 'vertical'
+    spacing: dp(5)
+    off_button: off_button
+    ignite_button: ignite_button
+
+    MDBoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: 0.3
+
+        SpaceLabel:
+            size_hint_x: 0.5
+            text: 'Burn time'
+
+        SpaceLabel:
+            size_hint_x: 0.5
+            text: str(root.igniter_widget.burntime) + ' ms' if root.igniter_widget is not None else '- ms'
+            halign: 'right'
+
+    SpaceServiceButton:
+        id: ignite_button
+        text: 'IGNITE'
+        size_hint_y: 0.3
+        ack_state: root.igniter_widget.ack_states['IGNITE'] if root.igniter_widget is not None else AckStatus.READY
+        callback: root.igniter_widget.ignite if root.igniter_widget is not None else lambda cb: None
+
+    SpaceServiceButton:
+        id: off_button
+        text: 'OFF'
+        size_hint_y: 0.3
+        ack_state: root.igniter_widget.ack_states['OFF'] if root.igniter_widget is not None else AckStatus.READY
+        callback: root.igniter_widget.off if root.igniter_widget is not None else lambda cb: None

@@ -1,0 +1,30 @@
+#:kivy 2.1.0
+#:import PlotContainer rocket_ground_station.components.plot_container
+
+<PlotContainer>:
+    orientation: 'vertical'
+    possible_plot_transition: 'Pause plotting'
+    device: None
+    plot_area: plot_area
+    add_plot_btn: add_plot_btn
+    toggle_plot_state_btn: toggle_plot_state_btn
+    toolbar: toolbar
+    BoxLayout:
+        orientation: 'vertical'
+        BoxLayout:
+            size_hint_y: 0.2
+            id: toolbar
+            orientation: 'horizontal'
+            Button:
+                id: add_plot_btn
+                text: 'Add plot'
+                on_press: root.on_add_plot_press()
+                visible: False
+            Button:
+                id: toggle_plot_state_btn
+                opacity: 0 if not root.toggle_btn_visible else 1
+                text: root.possible_plot_transition
+                on_press: root.on_toggle_plot_state_press()
+
+        BoxLayout:
+            id: plot_area

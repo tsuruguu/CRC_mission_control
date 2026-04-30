@@ -1,0 +1,27 @@
+#:kivy 2.1.0
+#: import AckStatus rocket_ground_station.core.communication.ids.AckStatus
+
+
+<SupplyCard>:
+    orientation: 'vertical'
+    spacing: dp(5)
+    open_button: open_button
+    close_button: close_button
+
+    SpaceLabel:
+        text: ''
+        size_hint_y: 0.3
+
+    SpaceServiceButton:
+        id: open_button
+        text: 'OPEN'
+        size_hint_y: 0.3
+        ack_state: root.supply_widget.ack_states['OPEN'] if root.supply_widget is not None else AckStatus.READY
+        callback: root.supply_widget.open if root.supply_widget is not None else lambda cb: None
+
+    SpaceServiceButton:
+        id: close_button
+        text: 'CLOSE'
+        size_hint_y: 0.3
+        ack_state: root.supply_widget.ack_states['CLOSE'] if root.supply_widget is not None else AckStatus.READY
+        callback: root.supply_widget.close if root.supply_widget is not None else lambda cb: None

@@ -1,0 +1,158 @@
+#:kivy 2.1.0
+#: import AckStatus rocket_ground_station.core.communication.ids.AckStatus
+
+
+<HeatingLampCard>:
+    orientation: 'vertical'
+    spacing: dp(5)
+    pressure_label: pressure_label
+    target_pressure_label: target_pressure_label
+    status_label: status_label
+    target_input: target_input
+    
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: 0.15
+        
+        SpaceLabel:
+            text: "STATUS:"
+            size_hint_x: 0.4
+            halign: 'left'
+            
+        SpaceLabel:
+            id: status_label
+            text: "MANUAL - OFF"
+            size_hint_x: 0.6
+            halign: 'right'
+            color: app.theme_cls.primary_light
+    
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: 0.15
+        
+        SpaceLabel:
+            text: "CURRENT:"
+            size_hint_x: 0.4
+            halign: 'left'
+            
+        SpaceLabel:
+            id: pressure_label
+            text: "0.00 B"
+            size_hint_x: 0.6
+            halign: 'right'
+            color: app.theme_cls.primary_light
+    
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: 0.15
+        
+        SpaceLabel:
+            text: "TARGET:"
+            size_hint_x: 0.4
+            halign: 'left'
+            
+        SpaceLabel:
+            id: target_pressure_label
+            text: "0.00 B"
+            size_hint_x: 0.6
+            halign: 'right'
+            color: app.theme_cls.primary_light
+            
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 0.25
+        
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.4
+            
+            SpaceLabel:
+                text: "SET TARGET:"
+                size_hint_x: 0.4
+                font_style: 'Caption'
+                halign: 'left'
+                
+            SpaceLabel:
+                text: "B"
+                size_hint_x: 0.2
+                font_style: 'Caption'
+                halign: 'right'
+        
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.6
+            
+            SpaceTextField:
+                id: target_input
+                size_hint_x: 1.0
+                multiline: False
+                input_filter: 'float'
+                disabled: root.heating_lamp_widget.is_auto_control_active if root.heating_lamp_widget is not None else False
+                text: str(root.heating_lamp_widget.target_pressure) if root.heating_lamp_widget is not None else "0.0"
+                on_text_validate: root.on_target_input_validate(self.text)
+                on_focus: if not self.focus: root.on_target_input_validate(self.text)
+                halign: 'center'
+                font_size: '18sp'
+                background_color: app.theme_cls.bg_dark
+                foreground_color: app.theme_cls.primary_light
+    
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: 0.3
+        spacing: dp(5)
+        
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_x: 0.5
+            spacing: dp(2)
+            
+            SpaceLabel:
+                text: "MANUAL CONTROL"
+                size_hint_y: 0.3
+                font_style: 'Caption'
+                
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: 0.7
+                spacing: dp(2)
+                
+                SpaceServiceButton:
+                    text: 'ON'
+                    size_hint_x: 0.5
+                    disabled: root.heating_lamp_widget.is_auto_control_active if root.heating_lamp_widget is not None else False
+                    ack_state: root.heating_lamp_widget.ack_states['OPEN'] if root.heating_lamp_widget is not None else AckStatus.READY
+                    callback: root.heating_lamp_widget.turn_on if root.heating_lamp_widget is not None else lambda cb: None
+                
+                SpaceServiceButton:
+                    text: 'OFF'
+                    size_hint_x: 0.5
+                    disabled: root.heating_lamp_widget.is_auto_control_active if root.heating_lamp_widget is not None else False
+                    ack_state: root.heating_lamp_widget.ack_states['CLOSE'] if root.heating_lamp_widget is not None else AckStatus.READY
+                    callback: root.heating_lamp_widget.turn_off if root.heating_lamp_widget is not None else lambda cb: None
+        
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_x: 0.5
+            spacing: dp(2)
+            
+            SpaceLabel:
+                text: "AUTO CONTROL"
+                size_hint_y: 0.3
+                font_style: 'Caption'
+                
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: 0.7
+                spacing: dp(2)
+                
+                SpacePrimaryButton:
+                    text: 'START'
+                    size_hint_x: 0.5
+                    disabled: root.heating_lamp_widget.is_auto_control_active if root.heating_lamp_widget is not None else False
+                    on_release: root.heating_lamp_widget.start_auto_control() if root.heating_lamp_widget is not None else None
+                
+                SpacePrimaryButton:
+                    text: 'STOP'
+                    size_hint_x: 0.5
+                    disabled: not root.heating_lamp_widget.is_auto_control_active if root.heating_lamp_widget is not None else True
+                    on_release: root.heating_lamp_widget.stop_auto_control() if root.heating_lamp_widget is not None else None

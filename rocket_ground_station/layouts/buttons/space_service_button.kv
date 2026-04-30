@@ -1,0 +1,20 @@
+#:kivy 2.1.0
+
+<SpaceServiceButton>:
+    orientation: 'horizontal'
+    spacing: dp(20)
+    padding: dp(0)
+    size_hint_x: 1
+    button: button
+    ack: ack
+
+    SpacePrimaryButton:
+        id: button
+        text: root.text
+        size_hint_x: 0.85
+        size_hint_y: 0.75
+        on_press: root._on_button_pressed()
+
+    SpaceAckLight:
+        id: ack
+        size_hint_x: 0.15

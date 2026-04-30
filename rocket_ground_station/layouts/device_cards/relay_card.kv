@@ -1,0 +1,23 @@
+#:kivy 2.1.0
+#: import AckStatus rocket_ground_station.core.communication.ids.AckStatus
+
+
+<RelayCard>:
+    orientation: 'vertical'
+    spacing: dp(5)
+    open_button: open_button
+    close_button: close_button
+
+    SpaceServiceButton:
+        id: open_button
+        text: 'OPEN'
+        size_hint_y: 0.3
+        ack_state: root.relay_widget.ack_states['OPEN'] if root.relay_widget is not None else AckStatus.READY
+        callback: root.relay_widget.open if root.relay_widget is not None else lambda cb: None
+
+    SpaceServiceButton:
+        id: close_button
+        text: 'CLOSE'
+        size_hint_y: 0.3
+        ack_state: root.relay_widget.ack_states['CLOSE'] if root.relay_widget is not None else AckStatus.READY
+        callback: root.relay_widget.close if root.relay_widget is not None else lambda cb: None

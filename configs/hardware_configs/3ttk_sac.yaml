@@ -1,0 +1,383 @@
+devices:
+  dynamixel:
+    Bypass:
+      board: staszek
+      closed_pos: 3150
+      device_id: 3
+      open_pos: 1500
+      velocity: 100
+    MOV:
+      board: staszek
+      closed_pos: 3100
+      device_id: 1
+      open_pos: 1000
+      velocity: 100
+    Rocket Tank:
+      board: staszek
+      closed_pos: 2500
+      device_id: 2
+      open_pos: 900
+      velocity: 100
+    Rocket Vent:
+      board: staszek
+      closed_pos: 2600
+      device_id: 6
+      open_pos: 500
+      velocity: 100
+  parachute:
+    Deploy:
+      board: ola
+      device_id: 0
+  relay:
+    Detach:
+      board: kromek
+      device_id: 6
+    Fill Line:
+      board: kromek
+      device_id: 5
+    Fill Vent:
+      board: kromek
+      device_id: 4
+    Igniter:
+      board: kromek
+      device_id: 8
+    Spare0:
+      board: kromek
+      device_id: 7
+    Spare1:
+      board: kromek
+      device_id: 3
+  reset:
+    Czapla reset:
+      board: czapla
+      device_id: 0
+    Kromek reset:
+      board: kromek
+      device_id: 0
+    Staszek reset:
+      board: staszek
+      device_id: 0
+  scheduler:
+    Scheduler:
+      board: broadcast
+      # Feature is broken in the hardware, It's permanently set to False in software until fixed
+      # Changing this parameter won't do anything
+      close_on_finish: false
+      device_id: 0
+      expect_acks_from: []
+  sensor:
+    Altitude:
+      a: 1
+      b: 0
+      board: czapla
+      data_type: int32
+      device_id: 3
+      recording: false
+      round_to: 2
+      scale: 1e-3
+      units: m
+    Altitude (S):
+      a: 1
+      b: 0
+      board: staszek
+      data_type: float
+      device_id: 50
+      recording: false
+      round_to: 10
+      scale: 1
+      units: cm
+    Injector:
+      a: 1
+      b: 0
+      board: staszek
+      data_type: float
+      device_id: 3
+      recording: false
+      round_to: 2
+      scale: 1e3
+      units: mB
+    Latitude:
+      a: 1
+      b: 0
+      board: czapla
+      data_type: int32
+      device_id: 1
+      recording: false
+      round_to: -1
+      scale: 1e3
+      units: "\xB0"
+    Longitude:
+      a: 1
+      b: 0
+      board: czapla
+      data_type: int32
+      device_id: 2
+      recording: false
+      round_to: -1
+      scale: 1e3
+      units: "\xB0"
+    Masa butli:
+      a: 40.34697728
+      b: -0.7106770028
+      board: kromek
+      data_type: float
+      device_id: 4
+      recording: false
+      round_to: 2
+      scale: 1
+      units: kg
+    P Vessel:
+      a: 1
+      b: 0
+      board: staszek
+      data_type: float
+      device_id: 1
+      recording: false
+      round_to: 2
+      scale: 1e3
+      units: mB
+    Rocket Mass:
+      a: 39.89014
+      b: -10.9894
+      board: kromek
+      data_type: float
+      device_id: 2
+      recording: false
+      round_to: 2
+      scale: 1
+      units: kg
+    Sat count:
+      a: 1
+      b: 0
+      board: czapla
+      data_type: uint8
+      device_id: 4
+      recording: false
+      round_to: 0
+      scale: 1
+      units: ""
+    tankowanie:
+      a: 30.08662508
+      b: -26.40397695
+      board: kromek
+      data_type: float
+      device_id: 5
+      recording: false
+      round_to: 5
+      scale: 1
+      units: bar
+sequences:
+  dynamixel_test:
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 0
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: close
+      payload: 0
+      starts_after: 2000
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 2000
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: close
+      payload: 0
+      starts_after: 2000
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 2000
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: close
+      payload: 0
+      starts_after: 2000
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 2000
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: close
+      payload: 0
+      starts_after: 2000
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 2000
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: close
+      payload: 0
+      starts_after: 2000
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 2000
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: close
+      payload: 0
+      starts_after: 2000
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 2000
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: close
+      payload: 0
+      starts_after: 2000
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: close
+      payload: 0
+      starts_after: 2000
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: disable
+      payload: 0
+      starts_after: 2000
+  sac:
+    - device_name: Igniter
+      device_type: relay
+      operation: open
+      payload: 0
+      starts_after: 0
+    - device_name: Bypass
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 7000
+    - device_name: Igniter
+      device_type: relay
+      operation: close
+      payload: 0
+      starts_after: 6750
+    - device_name: Bypass
+      device_type: dynamixel
+      operation: close
+      payload: 0
+      starts_after: 250
+    - device_name: MOV
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 1
+    - device_name: MOV
+      device_type: dynamixel
+      operation: close
+      payload: 0
+      starts_after: 5500
+    - device_name: MOV
+      device_type: dynamixel
+      operation: disable
+      payload: 0
+      starts_after: 5000
+    - device_name: Bypass
+      device_type: dynamixel
+      operation: disable
+      payload: 0
+      starts_after: 1
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 33000
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: disable
+      payload: 0
+      starts_after: 3000
+  sac_debug_no_kromek:
+    - device_name: Bypass
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 1000
+    - device_name: Bypass
+      device_type: dynamixel
+      operation: close
+      payload: 0
+      starts_after: 7000
+    - device_name: MOV
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 1
+    - device_name: MOV
+      device_type: dynamixel
+      operation: close
+      payload: 0
+      starts_after: 5000
+    - device_name: MOV
+      device_type: dynamixel
+      operation: disable
+      payload: 0
+      starts_after: 5000
+    - device_name: Bypass
+      device_type: dynamixel
+      operation: disable
+      payload: 0
+      starts_after: 1
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 10000
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: disable
+      payload: 0
+      starts_after: 10000
+  sac_debug_short:
+    - device_name: Bypass
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 1000
+    - device_name: Bypass
+      device_type: dynamixel
+      operation: close
+      payload: 0
+      starts_after: 2000
+    - device_name: MOV
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 1
+    - device_name: MOV
+      device_type: dynamixel
+      operation: close
+      payload: 0
+      starts_after: 2000
+    - device_name: MOV
+      device_type: dynamixel
+      operation: disable
+      payload: 0
+      starts_after: 2000
+    - device_name: Bypass
+      device_type: dynamixel
+      operation: disable
+      payload: 0
+      starts_after: 1
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: open
+      payload: 0
+      starts_after: 2000
+    - device_name: Rocket Vent
+      device_type: dynamixel
+      operation: disable
+      payload: 0
+      starts_after: 2000

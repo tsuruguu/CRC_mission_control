@@ -1,0 +1,60 @@
+#:kivy 2.1.0
+
+
+<PistonCard>:
+    orientation: 'vertical'
+    spacing: dp(5)
+    per_value_label: per_value_label
+    len_value_label: len_value_label
+    vol_value_label: vol_value_label
+    label_box: label_box
+    value_wrong_color: (244/255, 67/255, 54/255, 1)
+    value_right_color: app.theme_cls.primary_light
+
+    BoxLayout:
+        orientation:'horizontal'
+        id: label_box
+        SpaceLabel:
+            id: per_value_label
+            font_style: 'H3'
+            halign: 'center'
+            text_size: None, None
+            text: str(root.piston_widget.per_value) + ' ' + root.piston_widget.units if root.piston_widget is not None else '--'
+            font_size: (1/max(5, len(self.text))) * 125 * root.label_scaling
+            color: app.theme_cls.primary_light if root.piston_widget is not None else app.theme_cls.disabled_primary_color
+
+        SpaceLabel:
+            id: len_value_label
+            font_style: 'H3'
+            halign: 'center'
+            text_size: None, None
+            text: str(root.piston_widget.len_value) + ' ' + root.piston_widget._device.lenunit if root.piston_widget is not None else '--'
+            font_size: (1/max(5, len(self.text))) * 125 * root.label_scaling
+            color: app.theme_cls.primary_light if root.piston_widget is not None else app.theme_cls.disabled_primary_color
+
+        SpaceLabel:
+            id: vol_value_label
+            font_style: 'H3'
+            halign: 'center'
+            text_size: None, None
+            text: str(root.piston_widget.vol_value) + ' ' + root.piston_widget._device.volunit if root.piston_widget is not None else '--'
+            font_size: (1/max(5, len(self.text))) * 125 * root.label_scaling
+            color: app.theme_cls.primary_light if root.piston_widget is not None else app.theme_cls.disabled_primary_color
+
+    BoxLayout:
+        canvas:
+            Color:
+                rgb: 0, 157/255, 255/255
+            Rectangle:
+                pos: self.pos
+                size: (root.size[0], 40)
+            Color:
+                rgb: 242/255, 141/255, 0
+            Rectangle:
+                pos: (root.piston_widget.relative_pos * (root.size[0] - 20) + self.pos[0], self.pos[1]) if root.piston_widget is not None else self.pos
+                size: ((1 - root.piston_widget.relative_pos * (1 - 20/root.size[0])) * (root.size[0]), 40) if root.piston_widget is not None else (root.size[0], 40)
+            Color:
+                rgb: 1, 1, 1
+            Rectangle:
+                pos: (root.piston_widget.relative_pos * (root.size[0] - 20) + self.pos[0], self.pos[1]) if root.piston_widget is not None else self.pos
+                size: (20, 40)

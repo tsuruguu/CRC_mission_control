@@ -1,0 +1,36 @@
+#:kivy 2.1.0
+#: import AckStatus rocket_ground_station.core.communication.ids.AckStatus
+
+
+<RecoveryCard>:
+    orientation: 'vertical'
+    spacing: dp(5)
+    arm_button: arm_button
+    disarm_button: disarm_button
+    armed_light: armed_light
+
+    MDBoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: 0.3
+
+        SpaceLabel:
+            size_hint_x: 0.85
+            text: 'ARMED'
+
+        SpaceAckLight:
+            size_hint_x: 0.15
+            id: armed_light
+
+    SpaceServiceButton:
+        id: arm_button
+        text: 'ARM'
+        size_hint_y: 0.3
+        ack_state: root.recovery_widget.ack_states['ARM'] if root.recovery_widget is not None else AckStatus.READY
+        callback: root.recovery_widget.arm_recovery if root.recovery_widget is not None else lambda cb: None
+
+    SpaceServiceButton:
+        id: disarm_button
+        text: 'DISARM'
+        size_hint_y: 0.3
+        ack_state: root.recovery_widget.ack_states['DISARM'] if root.recovery_widget is not None else AckStatus.READY
+        callback: root.recovery_widget.disarm_recovery if root.recovery_widget is not None else lambda cb: None

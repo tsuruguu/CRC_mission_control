@@ -1,0 +1,92 @@
+#:kivy 2.1.0
+
+<Hardware>:
+    orientation: 'vertical'
+    dashboard: dashboard
+    tab_title: tab_title
+    maintenance_dropdown: maintenance_dropdown
+    snap_dropdown: snap_dropdown
+    config_dropdown: config_dropdown
+    view_profiles_dropdown: view_profiles_dropdown
+    config_folder_button: config_folder_button
+
+    MDBoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: None
+        height: dp(62)
+        padding: [dp(10), dp(10), dp(10), 0]
+        MDBoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            size_hint_x: 1
+            height: dp(52)
+            spacing: dp(25)
+            padding: dp(5)
+            radius: [dp(5),]
+            md_bg_color: app.theme_cls.bg_light
+
+            SpaceTitleLabel:
+                id: tab_title
+                size_hint_x: 0.575
+                text: 'Rocket Hardware'
+
+            SpaceDropdown:
+                id: maintenance_dropdown
+                size_hint_x: 0.1
+                text: "Maintenance actions"
+                on_select: root._tabs['hardware'].execute_maintenance_option(args[1])
+
+            SpaceDropdown:
+                id: snap_dropdown
+                size_hint_x: 0.1
+                text: "Snapshot idle"
+                on_select: root._tabs['hardware'].execute_snap_option(args[1])
+
+            SpaceDropdown:
+                id: view_profiles_dropdown
+                size_hint_x: 0.1
+                on_select: root._refresh_dashboard(text=args[1])
+
+            SpaceDropdown:
+                id: config_dropdown
+                size_hint_x: 0.1
+                text: 'LOAD_HARDWARE'
+                on_select: root._tabs['hardware'].load_hardware_config(args[1])
+            
+            SpaceIconButton:
+                id: config_folder_button
+                icon: 'folder-cog-outline'
+                text: 'Open Config Folder'
+                size_hint_x: 0.025
+                on_press: root._tabs['hardware'].open_hardware_config_folder()
+                
+
+    MDBoxLayout:
+        orientation: 'vertical'
+
+        ScrollView:
+            effect_cls: 'ScrollEffect'
+            size_hint: (1,0.8)
+            size: (self.parent.width, self.parent.height)
+            bar_width: 15
+            scroll_type: ['bars', 'content']
+            scroll_wheel_distance: 50
+            scroll_timeout: 250
+            scroll_distance: 10
+            StackLayout:
+                id: dashboard
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(10)
+                padding: dp(10)
+
+    MDCard:
+        orientation: 'vertical'
+        size_hint_y: 0.2
+        md_bg_color: app.theme_cls.bg_light
+        spacing: dp(5)
+        padding: dp(2)
+
+        SpaceLabel:
+            text: root.recent_frames
+            color: app.theme_cls.primary_light

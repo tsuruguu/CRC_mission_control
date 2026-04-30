@@ -1,0 +1,70 @@
+#:kivy 2.1.0
+
+<Communication>:
+    orientation: 'vertical'
+    frame_logger: frame_logger
+    status_layout: status_layout
+
+    MDBoxLayout:
+        orientation: 'horizontal'
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            size_hint_x: 0.25
+            spacing: dp(10)
+            padding: dp(10)
+
+            MDCard:
+                orientation: 'vertical'
+                padding: dp(10)
+                spacing: dp(10)
+                radius: [dp(5),]
+                border_radius: dp(5)
+                md_bg_color: app.theme_cls.bg_light
+
+                SpaceTitleLabel:
+                    text: 'Connection'
+                    size_hint_y: 1/6
+
+                GridLayout:
+                    id: status_layout
+                    cols: 2
+
+            MDCard:
+                orientation: 'vertical'
+                padding: dp(10)
+                spacing: dp(10)
+                radius: [dp(5),]
+                border_radius: dp(5)
+                md_bg_color: app.theme_cls.bg_light
+
+                SpaceTitleLabel:
+                    text: 'Frames'
+                    size_hint_y: 1/6
+
+                GridLayout:
+                    cols: 2
+                    SpaceLabel:
+                        text: 'Sent:'
+                    SpaceLabel:
+                        text: str(root.sent)
+                    SpaceLabel:
+                        text: 'Received:'
+                    SpaceLabel:
+                        text: str(root.received)
+                    SpaceLabel:
+                        text: 'Broken:'
+                    SpaceLabel:
+                        text: str(root.mismatched_crc_count)
+                    SpaceLabel:
+                        text: 'Unknown:'
+                    SpaceLabel:
+                        text: str(root.unregistered_frames_count)
+                    SpaceLabel:
+                        text: 'Missing headers:'
+                    SpaceLabel:
+                        text: str(root.missing_header_count)
+
+        FrameLogger:
+            id: frame_logger
+            size_hint_x: 0.75

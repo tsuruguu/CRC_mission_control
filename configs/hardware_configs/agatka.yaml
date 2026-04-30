@@ -1,0 +1,511 @@
+devices:
+  dynamixel:
+    1 Main fuel:
+      board: agatka
+      closed_pos: 1700
+      device_id: 1
+      hydro_name: MFV
+      open_pos: 3500
+      velocity: 35
+    2 Fill fuel:
+      board: agatka
+      closed_pos: 500
+      device_id: 2
+      hydro_name: VOV
+      open_pos: 2600
+      velocity: 100
+    3 Main ox:
+      board: agatka
+      closed_pos: 1250
+      device_id: 3
+      hydro_name: MOV
+      open_pos: 3000
+      velocity: 100
+    4 Vent ox:
+      board: agatka
+      closed_pos: 2800
+      device_id: 4
+      hydro_name: FOV
+      open_pos: 700
+      velocity: 100
+    5 Vent fuel:
+      board: agatka
+      closed_pos: 2500
+      device_id: 5
+      hydro_name: FFV
+      open_pos: 500
+      velocity: 100
+    6 Fill ox:
+      board: agatka
+      closed_pos: 50
+      device_id: 6
+      hydro_name: VFV
+      open_pos: 2000
+      velocity: 100
+  flash:
+    flash:
+      board: kromek
+      device_id: 0
+  heatinglamp:
+    Lamp 1:
+      board: kromek
+      device_id: 2
+      margin: 0.5
+      dependencies:
+        pressure_sensor: PV OX id_3
+      target_pressure: 60
+    Lamp 2:
+      board: kromek
+      device_id: 3
+      margin: 0.5
+      dependencies:
+        pressure_sensor: PV OX id_3
+      target_pressure: 60
+  piston:
+    Piston position:
+      a: 1
+      b: 0
+      board: agatka
+      data_type: float
+      device_id: 31
+      hydro_name: Piston
+      length: 100
+      length_units: mm
+      max_val: 100
+      min_val: 0
+      recording: false
+      round_to: 2
+      scale: 1e-1
+      units: '%'
+      volume: 100
+      volume_units: l
+  relay:
+    IGN:
+      board: kromek
+      device_id: 8
+      hydro_name: IGN
+    Load OX:
+      board: kromek
+      device_id: 1
+      hydro_name: LFV
+    Main:
+      board: agatka
+      device_id: 0
+      hydro_name: LFV
+    UnLoad Ox:
+      board: kromek
+      device_id: 0
+      hydro_name: UFV
+  scheduler:
+    Scheduler:
+      board: broadcast
+      close_on_finish: false
+      device_id: 0
+      expect_acks_from:
+      - agatka
+      hydro_name: scheduler_visual
+  sensor:
+    Calibration id_2:
+      a: 1
+      b: 0
+      board: agatka
+      data_type: float
+      device_id: 2
+      recording: false
+      round_to: 2
+      scale: 1
+      units: B
+    Height id_18:
+      a: 1
+      b: 0
+      board: agatka
+      data_type: float
+      device_id: 18
+      hydro_name: ManifoldFurl
+      recording: false
+      round_to: 7
+      scale: 10e-4
+      units: m
+    Latitude id_17:
+      a: 1
+      b: 0
+      board: agatka
+      data_type: float
+      device_id: 17
+      hydro_name: ManifoldFurl
+      recording: false
+      round_to: 7
+      scale: 10e-8
+      units: N
+    Longnitude id_16:
+      a: 1
+      b: 0
+      board: agatka
+      data_type: float
+      device_id: 16
+      hydro_name: ManifoldFurl
+      recording: false
+      round_to: 7
+      scale: 10e-8
+      units: E
+    PV OX id_3:
+      a: 28.79748786
+      b: -25.80227182
+      board: agatka
+      data_type: float
+      device_id: 3
+      recording: false
+      round_to: 2
+      scale: 1
+      snapshotting: true
+      units: B
+    PV_Fuel id_4:
+      a: 71.15472521
+      b: -62.20532861
+      board: agatka
+      data_type: float
+      device_id: 4
+      recording: false
+      round_to: 2
+      scale: 1
+      snapshotting: true
+      units: B
+    Satelites id_19:
+      a: 1
+      b: 0
+      board: agatka
+      data_type: float
+      device_id: 19
+      hydro_name: ManifoldFurl
+      recording: false
+      round_to: 7
+      scale: 1
+      units: :)
+    Tenso odwagi:
+      a: 8.43247e-05
+      b: -721.5673366
+      board: pietek
+      data_type: float
+      device_id: 11
+      hydro_name: tenso_visual_lol
+      recording: false
+      round_to: 2
+      scale: 1
+      units: kg
+    kulite5 Manifold Ox:
+      a: 71.18
+      b: -81.19
+      board: kromek
+      data_type: float
+      device_id: 5
+      hydro_name: ManifoldOx
+      recording: false
+      round_to: 2
+      scale: 1
+      snapshotting: true
+      units: B
+    kulite6 Manifold Fuel:
+      a: 71.73929765
+      b: -82.62326186
+      board: kromek
+      data_type: float
+      device_id: 6
+      hydro_name: PVOx
+      recording: false
+      round_to: 2
+      scale: 1
+      snapshotting: true
+      units: B
+sequences:
+  COLD_FLOW_huj:
+  - device_name: flash
+    device_type: flash
+    operation: start_logging
+    payload: 0
+    starts_after: 1000
+  - device_name: 4 Vent ox
+    device_type: dynamixel
+    operation: open
+    payload: 0
+    starts_after: 5000
+  - device_name: 4 Vent ox
+    device_type: dynamixel
+    operation: close
+    payload: 0
+    starts_after: 1000
+  - device_name: Main
+    device_type: relay
+    operation: open
+    payload: 0
+    starts_after: 5000
+  - device_name: Main
+    device_type: relay
+    operation: close
+    payload: 0
+    starts_after: 10000
+  - device_name: flash
+    device_type: flash
+    operation: stop_logging
+    payload: 0
+    starts_after: 5000
+  LECI:
+  - device_name: 4 Vent ox
+    device_type: dynamixel
+    operation: open
+    payload: 0
+    starts_after: 10000
+  - device_name: 4 Vent ox
+    device_type: dynamixel
+    operation: close
+    payload: 0
+    starts_after: 1000
+  - device_name: IGN
+    device_type: relay
+    operation: open
+    payload: 0
+    starts_after: 15000
+  - device_name: IGN
+    device_type: relay
+    operation: close
+    payload: 0
+    starts_after: 800
+  - device_name: Main
+    device_type: relay
+    operation: open
+    payload: 0
+    starts_after: 0
+  - device_name: Main
+    device_type: relay
+    operation: close
+    payload: 0
+    starts_after: 30000
+  coldflow-ox:
+  - device_name: flash
+    device_type: flash
+    operation: start_logging
+    payload: 0
+    starts_after: 1000
+  - device_name: Main
+    device_type: relay
+    operation: open
+    payload: 0
+    starts_after: 1000
+  - device_name: Main
+    device_type: relay
+    operation: close
+    payload: 0
+    starts_after: 4000
+  - device_name: flash
+    device_type: flash
+    operation: stop_logging
+    payload: 0
+    starts_after: 3000
+  coldflow0706:
+  - device_name: flash
+    device_type: flash
+    operation: start_logging
+    payload: 0
+    starts_after: 1000
+  - device_name: 4 Vent ox
+    device_type: dynamixel
+    operation: open
+    payload: 0
+    starts_after: 1000
+  - device_name: 4 Vent ox
+    device_type: dynamixel
+    operation: close
+    payload: 0
+    starts_after: 1000
+  - device_name: Main
+    device_type: relay
+    operation: open
+    payload: 0
+    starts_after: 5000
+  - device_name: Main
+    device_type: relay
+    operation: close
+    payload: 0
+    starts_after: 1500
+  - device_name: flash
+    device_type: flash
+    operation: stop_logging
+    payload: 0
+    starts_after: 7000
+  dry_dress_rehersal:
+  - device_name: 4 Vent ox
+    device_type: dynamixel
+    operation: open
+    payload: 0
+    starts_after: 15000
+  - device_name: 4 Vent ox
+    device_type: dynamixel
+    operation: close
+    payload: 0
+    starts_after: 1000
+  - device_name: IGN
+    device_type: relay
+    operation: open
+    payload: 0
+    starts_after: 5000
+  - device_name: IGN
+    device_type: relay
+    operation: close
+    payload: 0
+    starts_after: 800
+  - device_name: Main
+    device_type: relay
+    operation: open
+    payload: 0
+    starts_after: 0
+  - device_name: Main
+    device_type: relay
+    operation: close
+    payload: 0
+    starts_after: 10000
+  hf1:
+  - device_name: 4 Vent ox
+    device_type: dynamixel
+    operation: open
+    payload: 0
+    starts_after: 1000
+  - device_name: 4 Vent ox
+    device_type: dynamixel
+    operation: close
+    payload: 0
+    starts_after: 1000
+  hot_fire_1_5:
+  - device_name: 4 Vent ox
+    device_type: dynamixel
+    operation: open
+    payload: 0
+    starts_after: 1000
+  - device_name: 4 Vent ox
+    device_type: dynamixel
+    operation: close
+    payload: 0
+    starts_after: 1000
+  - device_name: Main
+    device_type: relay
+    operation: open
+    payload: 0
+    starts_after: 0
+  - device_name: Main
+    device_type: relay
+    operation: close
+    payload: 0
+    starts_after: 1500
+  hot_fire_full:
+  - device_name: flash
+    device_type: flash
+    operation: start_logging
+    payload: 0
+    starts_after: 15000
+  - device_name: 4 Vent ox
+    device_type: dynamixel
+    operation: open
+    payload: 0
+    starts_after: 1000
+  - device_name: 4 Vent ox
+    device_type: dynamixel
+    operation: close
+    payload: 0
+    starts_after: 1000
+  - device_name: IGN
+    device_type: relay
+    operation: open
+    payload: 0
+    starts_after: 10000
+  - device_name: IGN
+    device_type: relay
+    operation: close
+    payload: 0
+    starts_after: 500
+  - device_name: Main
+    device_type: relay
+    operation: open
+    payload: 0
+    starts_after: 0
+  - device_name: Main
+    device_type: relay
+    operation: close
+    payload: 0
+    starts_after: 15000
+  - device_name: flash
+    device_type: flash
+    operation: stop_logging
+    payload: 0
+    starts_after: 15000
+  seq1:
+  - device_name: flash
+    device_type: flash
+    operation: start_logging
+    payload: 0
+    starts_after: 1000
+  - device_name: flash
+    device_type: flash
+    operation: stop_logging
+    payload: 0
+    starts_after: 15000
+  spust:
+  - device_name: 4 Vent ox
+    device_type: dynamixel
+    operation: open
+    payload: 0
+    starts_after: 1000
+  - device_name: 4 Vent ox
+    device_type: dynamixel
+    operation: close
+    payload: 0
+    starts_after: 15000
+  test:
+  - device_name: flash
+    device_type: flash
+    operation: start_logging
+    payload: 0
+    starts_after: 1000
+  - device_name: flash
+    device_type: flash
+    operation: stop_logging
+    payload: 0
+    starts_after: 5000
+  trb_cf_0409:
+  - device_name: flash
+    device_type: flash
+    operation: start_logging
+    payload: 0
+    starts_after: 1000
+  - device_name: Main
+    device_type: relay
+    operation: open
+    payload: 0
+    starts_after: 1000
+  - device_name: Main
+    device_type: relay
+    operation: close
+    payload: 0
+    starts_after: 1000
+  - device_name: flash
+    device_type: flash
+    operation: stop_logging
+    payload: 0
+    starts_after: 5000
+  vent:
+  - device_name: 4 Vent ox
+    device_type: dynamixel
+    operation: open
+    payload: 0
+    starts_after: 0
+  - device_name: 4 Vent ox
+    device_type: dynamixel
+    operation: close
+    payload: 0
+    starts_after: 30000
+view_profiles:
+- device_names:
+  - Fill Ox
+  - Chamber
+  profile_name: Profile_1
+- device_names:
+  - Manifold fuel(wika black)
+  - Load Ox
+  profile_name: Profile_2

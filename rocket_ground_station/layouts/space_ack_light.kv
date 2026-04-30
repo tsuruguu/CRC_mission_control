@@ -1,0 +1,25 @@
+#:kivy 2.1.0
+#:import SpaceAckLight rocket_ground_station.components.space_ack_light
+
+<SpaceAckLight>:
+    spinner: spinner
+    icon: icon.__self__
+    padding: 0
+    MDSpinner:
+        id: spinner
+        size_hint: None, None
+        pos_hint: {'center_y': 0.5, 'center_x': 0.5}
+        color: app.theme_cls.primary_color
+        size: dp(50), dp(50)
+
+    MDIcon:
+        id: icon
+        icon: 'circle'
+        disabled_color: app.theme_cls.disabled_primary_color
+        ack_color: app.theme_cls.primary_color
+        not_ack_color: app.theme_cls.error_color
+        theme_text_color: 'Custom'
+        text_color: self.disabled_color
+        size_hint: None, None
+        pos_hint: {'center_y': 0.5, 'center_x': 0.5}
+        size: dp(50), dp(50)

@@ -1,0 +1,84 @@
+#:kivy 2.1.0
+#:import Menu rocket_ground_station.components.menu
+#:import ConnectionSwitch rocket_ground_station.components.connection_button
+#:import ArmingSwitch rocket_ground_station.components.arming_buttons
+
+
+<Menu>:
+    tabs: tabs
+    action_bar: action_bar
+    connection_button: connection_button
+    arming_buttons: arming_buttons
+    log_label: log_label
+    orientation: 'vertical'
+    size: root.size
+
+    canvas.before:
+        Color:
+            rgba: app.theme_cls.bg_dark
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    MDTabs:
+        id: tabs
+        size_hint_y: 0.85
+        size_hint_x: 1
+        tab_hint_x: True
+        tab_indicator_anim: False
+        anim_duration: 0.1
+        lock_swiping: True
+        no_ripple_effect: True
+        background_color: app.theme_cls.bg_light
+        text_color_normal: app.theme_cls.text_color
+        text_color_active: app.theme_cls.primary_color
+        indicator_color: app.theme_cls.primary_color
+
+    MDCard:
+        id: action_bar
+        orientation: 'horizontal'
+        size_hint_y: None
+        height: dp(52)
+        padding: dp(5)
+        spacing: dp(25)
+        md_bg_color: app.theme_cls.bg_light  
+
+        ConnectionButton:
+            # Below expression makes sure that button is not too big on larger screens
+            size_hint_x: 0.1 if root.size[0] < 1600 else 0.06
+            id: connection_button
+
+        ArmingButtons:
+            size_hint_x: 0.2
+            id: arming_buttons
+
+        SpaceErrorButton:
+            size_hint_x: 0.1
+            text: 'RESET DYNAMIXELS'
+            on_press: root._tabs['hardware'].reset_dynamixels()
+
+        SpaceLabel:
+            id: log_label
+            size_hint_x: 0.2
+            text: ''
+            halign: 'center' 
+
+        SpaceErrorButton:
+            size_hint_x: 0.1
+            text: 'DEPLOY DROUGE'
+            md_bg_color: 0.78, 0.961, 0.184, 1
+            text_color: 0, 0, 0, 1
+            on_press: root._tabs['hardware'].deploy_drogue()
+
+        SpaceErrorButton:
+            size_hint_x: 0.1
+            text: 'DEPLOY MAIN'
+            md_bg_color: 0.961, 0.788, 0.184, 1
+            text_color: 0, 0, 0, 1
+            on_press: root._tabs['hardware'].deploy_main()
+
+        SpaceErrorButton:
+            size_hint_x: 0.1
+            text: 'ABORT'
+            on_press: root._tabs['sequences'].abort_sequence()
+

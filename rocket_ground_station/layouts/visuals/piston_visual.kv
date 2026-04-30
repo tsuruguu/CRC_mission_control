@@ -1,0 +1,47 @@
+<PistonVisual>:
+    size_hint: (.10, .23)
+    pos_hint: {"center_x":root.icon_center_pos_hint[0], "center_y":root.icon_center_pos_hint[1]}
+    piston_width: root.size[0] * 0.3490 if root.size is not None else 60
+    BoxLayout:
+        pos_hint: {"center_x": .8255, "center_y": .5}
+        canvas:
+            Color:
+                rgb: 0, 157/255, 255/255
+            Rectangle:
+                pos: self.pos
+                size: (root.piston_width, root.size[1])
+            Color:
+                rgb: 242/255, 141/255, 0
+            Rectangle:
+                pos:
+                    (self.pos[0], root.device_widget.relative_pos * (root.size[1] - 10) + self.pos[1]) \
+                    if root.device_widget is not None else self.pos
+                size:
+                    (root.piston_width, (1 - root.device_widget.relative_pos * (1 - 10/root.size[1])) * (root.size[1])) \
+                    if root.device_widget is not None else (root.piston_width, root.size[1])
+            Color:
+                rgb: 1, 1, 1
+            Rectangle:
+                pos:
+                    (self.pos[0], root.device_widget.relative_pos * (root.size[1] - 10) + self.pos[1]) \
+                    if root.device_widget is not None else self.pos
+                size: (root.piston_width, 10)
+    MDBoxLayout:
+        pos_hint:
+            {"center_x": .5, "top": 1} if root.placement == "top" else \
+            {"x": .55, "center_y": 0.5} if root.placement == "right" else \
+            {"right": .45, "center_y": 0.5} if root.placement == "left" else \
+            {"center_x": 0.5, "top": 0.25}                   #bottom
+        size_hint: (1, .25)
+        orientation: "vertical"
+        MDLabel:
+            size_hint: (1, .5)
+            text: root.name
+            halign: "center"
+            font_size:root.size[0]/8
+        MDLabel:
+            color: app.theme_cls.primary_color
+            size_hint: (1, .5)
+            text: str(root.device_widget.rounded_value) + ' ' + root.device_widget.units if root.device_widget is not None else '--'
+            halign: "center"
+            font_size:root.size[0]/8

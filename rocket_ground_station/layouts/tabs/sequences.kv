@@ -1,0 +1,54 @@
+#:kivy 2.1.0
+
+
+<Sequences@BoxLayout>:
+    orientation: 'vertical'
+    sequence_displayer: sequence_displayer
+    sequences_dropdown: sequences_dropdown
+    new_sequence_button: new_sequence_button
+    edit_sequence_button: edit_sequence_button
+    MDBoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: None
+        height: dp(62)
+        padding: [dp(10), dp(10), dp(10), 0]
+        MDBoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(52)
+            spacing: dp(20)
+            padding: dp(5)
+            radius: [dp(5),]
+            md_bg_color: app.theme_cls.bg_light
+
+            SpaceTitleLabel:
+                size_hint_x: 0.5
+                text: 'Sequences'
+            SpaceDropdown:
+                id: sequences_dropdown
+                on_select: root.display_sequence(args[1])
+                text: str.upper(root.current_sequence_name)
+                size_hint_x: 0.1
+                items: root.sequences
+            SpaceSecondaryButton:
+                id: new_sequence_button
+                icon: 'playlist-plus'
+                text: 'NEW'
+                size_hint_x: 0.1
+                on_press: root.new_sequence()
+            SpaceSecondaryButton:
+                id: edit_sequence_button
+                icon: 'grease-pencil'
+                text: 'EDIT'
+                size_hint_x: 0.1
+                on_press: root.edit_sequence(root.current_sequence_name)
+                disabled: root.current_sequence_name == ''
+            SpacePrimaryButton:
+                icon: 'send'
+                text: 'SEND'
+                size_hint_x: 0.1
+                on_press: root.upload_sequence()
+                disabled: root.current_sequence_name == ''
+
+    SequenceDisplayer:
+        id: sequence_displayer

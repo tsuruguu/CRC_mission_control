@@ -1,0 +1,21 @@
+#:kivy 2.1.0
+
+
+<DeviceDisplayer>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: dp(52)
+    spacing: dp(20)
+    padding: dp(5)
+    checkbox: checkbox
+
+    SpaceTableEntryLabel:
+        text: root.device_name
+    SpaceTableEntryLabel:
+        text: root.device_type
+    SpaceTableEntryLabel:
+        text: root.device_id
+    SpaceCheckbox:
+
+        id: checkbox
+        on_active: root.on_checkbox_active(self.active)

@@ -1,0 +1,78 @@
+#:kivy 2.1.0
+
+<ConnectContent>:
+    transport_spinner: transport_spinner
+
+    orientation: 'vertical'
+    spacing: dp(5)
+    padding: dp(25)
+    MDBoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: 0.5
+        SpaceLabel:
+            text: 'TRANSPORT TYPE'
+            size_hint_x: 0.3
+        SpaceDropdown:
+            id: transport_spinner
+            size_hint_x: 0.7
+            on_select: root.change_transport_content(args[1])
+
+<SerialTransportContent>:
+    port_spinner: port_spinner
+    baud_spinner: baud_spinner
+
+    orientation: 'vertical'
+    spacing: dp(5)
+    padding: dp(25)
+    MDBoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: 0.5
+        SpaceLabel:
+            text: 'BAUDRATE'
+            size_hint_x: 0.3
+        SpaceDropdown:
+            id: baud_spinner
+            size_hint_x: 0.7
+            on_select: self.text = args[1]
+    MDBoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: 0.5
+        SpaceLabel:
+            size_hint_x: 0.3
+            text: 'PORT'
+        SpaceDropdown:
+            id: port_spinner
+            size_hint_x: 0.7
+            on_select: self.text = args[1]
+
+<TcpTransportContent>:
+    address_input: address_input
+    port_input: port_input
+
+    orientation: 'vertical'
+    spacing: dp(5)
+    padding: dp(25)
+    MDBoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: 0.5
+        SpaceLabel:
+            text: 'ADDRESS'
+            size_hint_x: 0.3
+        SpaceTextField:
+            size_hint_x: 0.2
+            size_x: dp(50)
+            #input_filter: 'int'
+            id: address_input
+            text: '127.0.0.1'
+    MDBoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: 0.5
+        SpaceLabel:
+            size_hint_x: 0.3
+            text: 'PORT'
+        SpaceTextField:
+            size_hint_x: 0.2
+            size_x: dp(50)
+            input_filter: 'int'
+            id: port_input
+            text: '3000'

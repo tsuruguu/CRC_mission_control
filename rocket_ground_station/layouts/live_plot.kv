@@ -1,0 +1,19 @@
+#:kivy 2.1.0
+#:import LivePlot rocket_ground_station.components.live_plot
+
+<LivePlot>:
+    graph: graph
+    Graph:
+        id: graph
+        y_grid_label: True
+        x_grid_label: True
+        x_grid: True
+        y_grid: True
+        xlabel: root.xlabel
+        ylabel: root.ylabel
+        x_ticks_major: 25
+        y_ticks_major: 1
+        xmin: 0
+        xmax: root.xs_range
+        ymin: 0
+        ymax: 1

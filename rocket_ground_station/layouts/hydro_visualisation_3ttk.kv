@@ -1,0 +1,50 @@
+#: import ValveVisual rocket_ground_station.components.visuals.valve_visual
+#: import ValveVisual rocket_ground_station.components.visuals.piston_visual
+#: import PressureGauge rocket_ground_station.components.visuals.pressure_gauge
+#: import QuickConnectVisual rocket_ground_station.components.visuals.quick_connect_visual
+#: import RelayWidget rocket_ground_station.components.device_widgets.relay_widget
+#: import DynamixelWidget rocket_ground_station.components.device_widgets.dynamixel_widget.DynamixelWidget
+#: import ServoWidget rocket_ground_station.components.device_widgets.servo_widget.ServoWidget
+
+<HydroVisualisation>
+    AsyncImage:
+        source: "assets/hydraulics/hydraulics_scheme_3ttk.png"
+        allow_stretch: True
+        keep_ratio: False
+    # ---- FUEL VENTS ----
+    ValveVisual:
+        name: "TVV"
+        device_widget: (root.device_widgets.get("Rocket Vent"), (root.device_widgets))[0]
+        icon_center_pos_hint: (1556/3147, 1-259/1440)
+        button_placement: "right"
+        icon_rotation: "vertical"
+    ValveVisual:
+        name: "ORV"
+        device_widget: (root.device_widgets.get("Rocket Tank"), (root.device_widgets))[0]
+        icon_center_pos_hint: (1220/3147, 1-903/1440)
+        button_placement: "right"
+        icon_rotation: "vertical"
+    ValveVisual:
+        name: "MOV"
+        device_widget: (root.device_widgets.get("MOV"), (root.device_widgets))[0]
+        icon_center_pos_hint: (1556/3147, 1-903/1440)
+        button_placement: "right"
+        icon_rotation: "vertical"
+    ValveVisual:
+        name: "BOV"
+        device_widget: (root.device_widgets.get("Bypass"), (root.device_widgets))[0]
+        icon_center_pos_hint: (1905/3147, 1-903/1440)
+        button_placement: "right"
+        icon_rotation: "vertical"
+
+    PressureGauge:
+        name: "Manifold"
+        device_widget: (root.device_widgets.get("Injector"), (root.device_widgets))[0]
+        icon_center_pos_hint: (1701/3147, 1 - 1152/1440)
+        placement: "right"
+    PressureGauge:
+        name: "PV"
+        device_widget: (root.device_widgets.get("P Vessel"), (root.device_widgets))[0]
+        icon_center_pos_hint: (1670/3147, 1 - 438/1440)
+        placement: "right"
+

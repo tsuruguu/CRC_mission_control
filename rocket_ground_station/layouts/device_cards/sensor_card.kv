@@ -1,0 +1,22 @@
+#:kivy 2.1.0
+
+
+<SensorCard>:
+    orientation: 'vertical'
+    spacing: dp(5)
+    value_label: value_label
+    value_wrong_color: (244/255, 67/255, 54/255, 1)
+
+    SpaceTooltip:
+        tooltip_text: str(root.sensor_widget.tooltip_text) if root.sensor_widget is not None else ''
+        tooltip_text_color: app.theme_cls.text_color
+        tooltip_bg_color: app.theme_cls.primary_dark
+
+        SpaceLabel:
+            id: value_label
+            font_style: 'H3'
+            halign: 'center'
+            text_size: None, None
+            text: str(root.sensor_widget.rounded_value) + ' ' + root.sensor_widget.units if root.sensor_widget is not None else '--'
+            font_size: (1/len(self.text)) * 325
+            color: root.value_wrong_color if root.sensor_widget is not None and root.sensor_widget.is_unresponsive else app.theme_cls.primary_light

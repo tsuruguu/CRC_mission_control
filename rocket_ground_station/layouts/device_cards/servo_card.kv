@@ -1,0 +1,82 @@
+#:kivy 2.1.0
+
+
+<ServoCard>:
+    orientation: 'vertical'
+    spacing: dp(5)
+    open_button: open_button
+    close_button: close_button
+    position_bar: position_bar
+    close_label: close_label
+    open_label: open_label
+    position_entry: position_entry
+    position_button: position_button
+
+    SpaceLabel:
+        font_style: "Caption"
+        size_hint_y: 0.1
+        halign: "center"
+        text: str(root.servo_widget.position) if root.servo_widget else "--"
+
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: 0.3
+
+        SpaceLabel:
+            id: close_label
+            size_hint_x: 0.2
+            text: '--'
+
+        MDProgressBar:
+            id: position_bar
+            value: root.get_progress_bar_percent(root.servo_widget.position) if root.servo_widget is not None else 0
+            size_hint_x: 0.6
+            color: app.theme_cls.primary_color
+
+        SpaceLabel:
+            id: open_label
+            size_hint_x: 0.2
+            halign: 'right'
+            text: '--'
+
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: 0.3
+        spacing: dp(5)
+        SpaceTextField:
+            size_hint_x: 0.48
+            input_filter: 'int'
+            id: position_entry
+            text: '0'
+        SpaceServiceButton:
+            size_hint_x: 0.52
+            id: position_button
+            text: 'SET'
+            ack_state:
+                root.servo_widget.ack_states['SET_POSITION'] \
+                if root.servo_widget is not None else AckStatus.READY
+            callback:
+                root.set_position \
+                if root.servo_widget is not None else lambda cb: None
+
+    SpaceServiceButton:
+        id: open_button
+        text: 'OPEN'
+        size_hint_y: 0.3
+        ack_state:
+            root.servo_widget.ack_states['OPEN'] \
+            if root.servo_widget is not None else AckStatus.READY
+        callback:
+            root.servo_widget.open \
+            if root.servo_widget is not None else lambda cb: None
+
+    SpaceServiceButton:
+        id: close_button
+        text: 'CLOSE'
+        size_hint_y: 0.3
+        ack_state:
+            root.servo_widget.ack_states['CLOSE'] \
+            if root.servo_widget is not None else AckStatus.READY
+        callback:
+            root.servo_widget.close \
+            if root.servo_widget is not None else lambda cb: None

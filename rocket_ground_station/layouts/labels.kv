@@ -1,0 +1,50 @@
+#:kivy 2.1.0
+
+<SpaceLabel@MDLabel>:
+    markup: True
+    font_style: 'SpaceLabel'
+    # font_name: app.fonts['regular']
+
+
+<SpaceTitleLabel@SpaceLabel>:
+    font_style: 'SpaceTitleLabel'
+    valign: 'middle'
+    halign: 'center'
+
+
+<SpaceTipLabel@SpaceLabel>:
+    font_style: 'SpaceTipLabel'
+    halign: 'right'
+
+
+<SpaceCenteredLabel@SpaceLabel>:
+    valign: 'middle'
+    halign: 'center'
+
+
+<SpaceTableHeaderLabel@SpaceCenteredLabel>:
+    font_style: 'SpaceTableHeaderLabel'
+
+
+<SpaceTableEntryLabel@SpaceCenteredLabel>:
+
+
+
+<SpaceVerticalLabel@SpaceLabel>:
+    text_size: self.size[1], self.size[0]
+    halign: 'center'
+    valign: 'center'
+    canvas.before:
+        Color:
+            rgba: app.theme_cls.bg_dark
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: 5, 5, 5, 5
+        PushMatrix
+        Rotate:
+            angle: 90
+            origin: self.center
+    canvas.after:
+        PopMatrix
+    color: app.theme_cls.bg_light

@@ -1,0 +1,28 @@
+#:kivy 2.1.0
+
+<PlotSettings>:
+    device_feeds_spinner: device_feeds_spinner
+    ylabel: ylabel
+    title: 'Create feed live plot'
+    size_hint: 0.5, 0.5
+    separator_color: 0.9, 0.9, 0.9, 1
+
+    BoxLayout:
+        orientation: 'vertical'
+        SpaceLabel:
+            text: 'Feed type'
+        Spinner:
+            id: device_feeds_spinner
+        SpaceLabel:
+            text: 'Y label'
+        TextInput:
+            id: ylabel
+
+        BoxLayout:
+            orientation: 'horizontal'
+            Button:
+                text: 'Cancel'
+                on_release: root.dismiss()
+            Button:
+                text: 'Create'
+                on_press: root.create_plot()

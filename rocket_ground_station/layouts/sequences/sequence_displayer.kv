@@ -1,0 +1,27 @@
+#:kivy 2.1.0
+
+
+<SequenceDisplayer>:
+    orientation: 'vertical'
+    operations_container: operations_scroll_view.container
+    MDBoxLayout:
+        size_hint_y: None
+        height: dp(56)
+        orientation:'horizontal'
+        SpaceTableHeaderLabel:
+            text: 'DEVICE'
+        SpaceTableHeaderLabel:
+            text: 'NAME'
+        SpaceTableHeaderLabel:
+            text: 'OPERATION'
+        SpaceTableHeaderLabel:
+            text: 'START AFTER'
+        SpaceTableHeaderLabel:
+            text: 'PAYLOAD'
+    SpaceScrollView:
+        id: operations_scroll_view
+        bar_width: 15
+        scroll_type: ['bars', 'content']
+        scroll_wheel_distance: 30
+        scroll_timeout: 250
+        scroll_distance: 10

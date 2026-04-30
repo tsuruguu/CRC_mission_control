@@ -1,0 +1,197 @@
+devices:
+  dynamixel:
+    Main fuel: # old name: Fuel main
+      open_pos: 3400
+      closed_pos: 1600 #3100
+      board: "kromek"
+      device_id: 1
+      velocity: 100
+    Uload Ox: # old name: Ox vent
+      open_pos: 150 #1500
+      closed_pos: 2250 #3025
+      board: "kromek"
+      device_id: 2 #5
+      velocity: 100
+    Main Ox: # old name: Ox main
+      open_pos: 1400 #1500
+      closed_pos: 3100 #3025
+      board: "kromek"
+      device_id: 3 #5
+      velocity: 100
+    Fill Ox:
+      open_pos: 3350 #1200
+      closed_pos: 1200 #2800
+      board: "kromek"
+      device_id: 4 #4
+      velocity: 100
+    Fill fuel:
+      open_pos: 3000
+      closed_pos: 900
+      board: "kromek"
+      device_id: 5 #6
+      velocity: 100
+    Vent fuel: # old name: Fuel vent
+      open_pos: 2550
+      closed_pos: 450
+      board: "kromek"
+      device_id: 6 #6
+      velocity: 100
+
+  relay:
+    Purge fuel: # old name: Fuel fill vent
+      board: "kromek"
+      device_id: 2
+    Load Ox: # old name: Ox tankowanie
+      board: "kromek"
+      device_id: 3
+    Unload fuel: # old name: Roztankowanie
+      board: "kromek"
+      device_id: 7
+    Igniter:
+      board: "kromek"
+      device_id: 4
+    xd:
+      board: "kromek"
+      device_id: 6
+
+    #2,4,7
+  scheduler:
+    Scheduler:
+      board: "broadcast"
+      device_id: 0
+      # Feature is broken in the hardware, It's permanently set to False in software until fixed
+      # Changing this parameter won't do anything
+      close_on_finish: false
+      expect_acks_from: ["kromek"]
+
+  piston:
+    Piston position: # old name: Pozycja tloka
+      min_val: 0
+      max_val: 1.1
+      board: "kromek"
+      device_id: 31
+      data_type: "float"
+      recording: off
+      scale: 1e-1
+      a: 1
+      b: 0
+      round_to: 2
+      units: '%'
+      length_units: 'mm'
+      volume_units: 'ml'
+      display_length: true
+      display_volume: true
+      length: 996
+      volume: 27710.5
+      max_percentage_safe_val: 100
+      min_percentage_safe_val: 40
+
+  sensor:
+    # Ext V Mass:
+    #   board: "kromek"
+    #   device_id: 3
+    #   data_type: "float"
+    #   recording: off
+    #   units: "kg"
+    #   scale: 1e3
+    #   a: 0.339227064
+    #   b: -7.842225483
+
+    # Rocket Mass:
+    #   board: "kromek"
+    #   device_id: 2
+    #   data_type: "float"
+    #   recording: off
+    #   units: "kg"
+    #   scale: 1e0
+    #   a: -76.61377961
+    #   b: -1.900021734
+
+    Preassure vessel fuel:
+       board: "kromek"
+       device_id: 1
+       data_type: "float"
+       recording: off
+       units: "mB"
+       scale: 1e3
+       a: 1.237490589 # 0.736588
+       b: 6993.041276
+
+    Preassure vessel Ox:
+      board: "kromek"
+      device_id: 7
+      data_type: "float"
+      recording: off
+      units: "mB"
+      scale: 1e3
+      a: 1.237490589 # 0.736588
+      b: 6993.041276
+
+
+    Manifold fuel: # old name: Injector_Fuel
+      board: "kromek"
+      device_id: 5
+      data_type: "float"
+      recording: off
+      units: "mB"
+      scale: 1e3
+      a: 1.279855
+      b: 6796.709
+
+    Manifold Ox: # old name: Injector_Ox
+      board: "kromek"
+      device_id: 0
+      data_type: "float"
+      recording: off
+      units: "mB"
+      scale: 1e3
+      a: 1.279855
+      b: 6796.709
+
+    Ext tank Ox:
+       board: "kromek"
+       device_id: 6
+       data_type: "float"
+       recording: off
+       units: "mB"
+       scale: 1e3
+       a: 1.323893783
+       b: 6538.448664
+
+    Chamber:
+      board: "kromek"
+      device_id: 8
+      data_type: "float"
+      recording: off
+      units: "mB"
+      scale: 1e3
+      a: 1.237490589 # 0.736588
+      b: 6993.041276
+
+    R0cket mass:
+      board: "kromek"
+      device_id: 3
+      data_type: "float"
+      recording: off
+      units: "kg"
+      scale: 1
+      a: 38.0182 # 34.2444 # 40.34697728
+      b: -0.30221 # 4.43026 # -0.710670028
+      round_to: 2
+
+    Ext tank Ox mass:
+      board: "kromek"
+      device_id: 4
+      data_type: "float"
+      recording: off
+      units: "kg"
+      scale: 1
+      a: 39.89014
+      b: -10.9894
+      round_to: 2
+
+
+  flash:
+    flash:
+      board: "kromek"
+      device_id: 0

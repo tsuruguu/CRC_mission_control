@@ -1,0 +1,52 @@
+#:kivy 2.1.0
+#: import AckStatus rocket_ground_station.core.communication.ids.AckStatus
+
+
+<SchedulerCard>:
+    orientation: 'vertical'
+    spacing: dp(5)
+    start_button: start_button
+    clear_button: clear_button
+    next_operation_label: next_operation_label
+    time_remaining_label: time_remaining_label
+
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 0.6
+        spacing: dp(5)
+        padding: dp(10)
+
+        SpaceLabel:
+            id: next_operation_label
+            text: root.scheduler_widget.next_operation_text if root.scheduler_widget is not None else ""
+            font_style: 'Body1'
+            halign: 'center'
+            text_size: self.size
+            color: app.theme_cls.primary_light
+            size_hint_y: 0.6
+
+        SpaceLabel:
+            id: time_remaining_label
+            text: root.scheduler_widget.time_to_next_operation if root.scheduler_widget is not None else ""
+            font_style: 'Body1'
+            halign: 'center'
+            color: app.theme_cls.primary_color
+            size_hint_y: 0.4
+
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: 0.4
+        spacing: dp(10)
+        padding: [dp(10), 0, dp(10), dp(10)]
+
+        SpaceServiceButton:
+            id: start_button
+            text: 'START'
+            ack_state: root.scheduler_widget.ack_states['START'] if root.scheduler_widget is not None else AckStatus.READY
+            callback: root.scheduler_widget.start if root.scheduler_widget is not None else lambda cb: None
+
+        SpaceServiceButton:
+            id: clear_button
+            text: 'CLEAR'
+            ack_state: root.scheduler_widget.ack_states['CLEAR'] if root.scheduler_widget is not None else AckStatus.READY
+            callback: root.scheduler_widget.clear if root.scheduler_widget is not None else lambda cb: None
