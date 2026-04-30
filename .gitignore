@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# PyCharm / IntelliJ
+.idea/
+*.iml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+build/
+dist/
+
+# Kivy (widzę po README, że używasz)
+.tox/
