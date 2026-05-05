@@ -87,40 +87,44 @@ class TelemetryParser:
 
     def get_connection_status(self) -> ConnectionStatus:
         """
-        Oblicza status połączenia i loguje tylko zmiany stanów (NASA standard)[cite: 2, 25].
+        Oblicza status połączenia i loguje tylko zmiany stanów (NASA standard).
         """
         now = time.time()
         time_since_last = now - self._last_valid_time
         time_since_drop = now - self._last_drop_time
 
-        # 1. Określenie bieżącego statusu[cite: 2, 25]
+        # 1. USTALANIE PRIORYTETU STATUSU (bez przerywania funkcji)
         if time_since_last > 2.0:
-            current_status = ConnectionStatus.DISCONNECTED  # BLACK[cite: 2]
-        elif self.state.voltage > 0 and self.state.voltage < 3.3:
-            current_status = ConnectionStatus.ERROR  # RED[cite: 1, 25]
-        elif time_since_drop < 0.5:
-            return ConnectionStatus.DROPPED_FRAMES
-        else:
-            current_status = ConnectionStatus.CONNECTED  # GREEN[cite: 2]
+            current_status = ConnectionStatus.DISCONNECTED  # BLACK[cite: 42]
 
-        # 2. Logowanie przejść między stanami (wykonuje się tylko raz przy zmianie)[cite: 25]
+        elif self.state.voltage > 0 and self.state.voltage < 3.4:
+            current_status = ConnectionStatus.ERROR  # RED[cite: 42]
+
+        elif time_since_drop < 1.0:
+            current_status = ConnectionStatus.DROPPED_FRAMES  # YELLOW[cite: 42]
+
+        else:
+            current_status = ConnectionStatus.CONNECTED  # GREEN[cite: 2, 42]
+
+        # 2. LOGOWANIE PRZEJŚĆ MIĘDZY STANAMI (NASA Standard)
+        # Wykonuje się tylko raz, w momencie zmiany stanu
         if current_status != self._prev_conn_status:
             if current_status == ConnectionStatus.DISCONNECTED:
-                self.logger.error(f"UTTRATA SYGNAŁU: Brak danych od {time_since_last:.1f}s")
+                self.logger.error(f"UTRATA SYGNAŁU: Brak danych od {time_since_last:.1f}s")
 
             elif current_status == ConnectionStatus.ERROR:
                 self.logger.critical(f"BŁĄD ZASILANIA: Napięcie spadło do {self.state.voltage:.2f}V!")
 
             elif current_status == ConnectionStatus.DROPPED_FRAMES:
                 self.logger.warning(
-                    f"DEGRADACJA LINKU: Wykryto luki w transmisji LoRa (Suma: {self.state.dropped_frames})")
+                    f"DEGRADACJA LINKU: Wykryto luki w transmisji LoRa (Suma zgubionych: {self.state.dropped_frames})")
 
             elif current_status == ConnectionStatus.CONNECTED:
-                # Logujemy powrót do normy, jeśli poprzednio był błąd lub rozłączenie[cite: 25]
+                # Logujemy powrót do normy tylko jeśli wcześniej był błąd lub rozłączenie[cite: 6, 15]
                 if self._prev_conn_status in [ConnectionStatus.DISCONNECTED, ConnectionStatus.ERROR]:
                     self.logger.info("POŁĄCZENIE ODZYSKANE: Link telemetrii stabilny")
 
-            # Aktualizacja poprzedniego stanu[cite: 25]
+            # Aktualizacja poprzedniego stanu dla kolejnej klatki[cite: 6, 15]
             self._prev_conn_status = current_status
 
         return current_status

@@ -16,6 +16,8 @@ class MissionControlApp:
         self.serial = SerialManager()
         self.parser = TelemetryParser()
         self.logger = MissionLogger()
+        self.tx_timer = 0.0
+        self.rx_timer = 0.0
 
         # Inicjalizacja UI[cite: 11, 14]
         self.layout = MissionControlLayout()
@@ -80,6 +82,13 @@ class MissionControlApp:
         dpg.configure_item("main_para_btn", callback=lambda: self._send_cmd("DEPLOY_MAIN"))
         dpg.configure_item("reset_btn", callback=lambda: self._send_cmd("RESET_DYNAMIXELS"))
 
+        def refocus_callback():
+            dpg.focus_item("cmd_input")
+
+        dpg.configure_item("autoscroll_check", callback=refocus_callback)
+        dpg.configure_item("raw_autoscroll_check", callback=refocus_callback)
+        dpg.configure_item("cmd_autoscroll_check", callback=refocus_callback)
+
     def _on_scan(self):
         """Skanowanie dostępnych portów COM."""
         ports = self.serial.scan_ports()
@@ -101,26 +110,23 @@ class MissionControlApp:
     # main.py - Poprawione metody klasy MissionControlApp
 
     def _on_send(self):
-        """Wysyła komendę, czyści pole i przywraca fokus kursora."""
+        """Wysyła komendę i czyści pole."""
         cmd = dpg.get_value("cmd_input")
         if not cmd.strip():
             return
-
-        # Wywołanie metody wysyłania
         if self._send_cmd(cmd):
             dpg.set_value("cmd_input", "")
-        else:
-            self.logger.error(f"Nie udało się wysłać: {cmd} (Brak połączenia?)")
-
-        # Przywrócenie fokusu, by móc pisać dalej bez klikania myszką
         dpg.focus_item("cmd_input")
 
     def _send_cmd(self, cmd):
-        """Logika wysyłania danych przez port szeregowy[cite: 26]."""
+        """Logika wysyłania danych z impulsem LED[cite: 41, 44]."""
         if self.serial.send_data(cmd):
-            StatusIndicator.blink_tx()
+            # Zapalamy diodę Blue i ustawiamy czas trwania impulsu (np. 100ms)
+            StatusIndicator.set_led("tx_led", theme.STATUS_BLUE)
+            self.tx_timer = time.time() + 0.1
+
             self.logger.info(f"Sent: {cmd}")
-            self._log_command(f"TX > {cmd}")
+            self.terminal_cmd.append(f"TX > {cmd}")
             return True
         return False
 
@@ -155,54 +161,74 @@ class MissionControlApp:
         except Exception:
             pass
 
+        # W main_2.py, metoda run()
+
     def run(self):
-        """Główna pętla aplikacji (Real-time update)[cite: 13, 14]."""
+        """Główna pętla aplikacji (Real-time update)."""
         dpg.setup_dearpygui()
         dpg.show_viewport()
         dpg.set_primary_window("Primary Window", True)
 
-        self.logger.info("Mission Control Started")
-
         while dpg.is_dearpygui_running():
-            while not self.serial.raw_queue.empty():
+            now = time.time()
+            lines_processed = 0
+            while not self.serial.raw_queue.empty() and lines_processed < 20:
                 raw_line = self.serial.raw_queue.get()
+                lines_processed += 1
 
-                # 1. Zapis do pliku (logowanie osobne)
+                StatusIndicator.set_led("rx_led", theme.STATUS_GREEN)
+                self.rx_timer = now + 0.1
+
                 self.logger.log_raw_frame(raw_line)
+                self.terminal_raw.append(f"RX > {raw_line}")  # Tu tylko dodajemy do bufora
 
-                # 2. Wyświetlanie w UI z poprawionym scrollem
-                self.terminal_raw.append(f"RX > {raw_line}")
-
-                # 3. Parsowanie (Twoja dotychczasowa logika)
                 frame = self.parser.parse_line(raw_line)
                 if frame:
+                    # Aktualizacja Navballa i metryk (to jest lekkie)
                     self.layout.navball.update(frame.pitch, frame.roll, frame.yaw)
-                    self.logger.log_telemetry(frame)
-                    StatusIndicator.blink_rx()
-
-                    # Aktualizacja Navballa[cite: 13]
-                    self.layout.navball.update(frame.pitch, frame.roll, frame.yaw)
-
-                    # Aktualizacja wyświetlaczy[cite: 11]
                     FlightDataDisplays.update_state(frame.state)
-                    FlightDataDisplays.update_metrics(
-                        frame.altitude, frame.voltage, frame.temp, frame.strain_gauge
-                    )
+                    FlightDataDisplays.update_metrics(frame.altitude, frame.voltage, frame.temp, frame.strain_gauge)
                     if self.payload_mgr:
                         self.payload_mgr.update(frame.temp_payload, frame.current)
 
-            # 2. Aktualizacja statusów systemowych[cite: 11, 14]
+            # 2. KLUCZOWY MOMENT: Aktualizujemy terminale RAZ po przetworzeniu paczki danych
+            self.terminal.update_ui()
+            self.terminal_raw.update_ui()
+            self.terminal_cmd.update_ui()
+            self._update_indicators(now)
+
+            # 3. Aktualizacja statusów systemowych
             current_status = self.parser.get_connection_status()
             StatusIndicator.set_main_led(current_status)
             dpg.set_value("bitrate_text", f"{self.serial.bitrate:.1f} kb/s")
 
-            # 3. Renderowanie klatki
+            # 4. Renderowanie
             dpg.render_dearpygui_frame()
 
         # Shutdown
         self.logger.info("Mission Control Session Ended")  # <--- DODAJ TO[cite: 21]
         self.serial.disconnect()
         dpg.destroy_context()
+
+    def _update_indicators(self, now):
+        """Zarządza miganiem i resetowaniem LED-ów[cite: 40, 42]."""
+        status = self.parser.get_connection_status()
+
+        # --- GŁÓWNY LED ---
+        if status == ConnectionStatus.DROPPED_FRAMES:
+            # Miganie żółte: co 200ms (5 razy na sekundę)
+            is_on = (int(now * 5) % 2) == 0
+            color = theme.STATUS_AMBER if is_on else theme.COLOR_BLACK
+            StatusIndicator.set_led("main_status_led", color)
+        else:
+            # Standardowe kolory: Czerwony (Błąd), Zielony (OK), Czarny (Brak)
+            StatusIndicator.set_main_led(status)
+
+        # --- RX / TX LED (Reset do czarnego po upływie czasu) ---
+        if now > self.tx_timer:
+            StatusIndicator.set_led("tx_led", theme.COLOR_BLACK)
+        if now > self.rx_timer:
+            StatusIndicator.set_led("rx_led", theme.COLOR_BLACK)
 
     def _log_raw(self, text):
         """Loguje surową telemetrię i przewija RAW FEED."""

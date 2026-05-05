@@ -9,15 +9,13 @@ class NavballWidget:
         self.height = height
         self.center_x = width / 2
         self.center_y = height / 2
-        self.radius = 110  # Nieco większy promień dla czytelności
+        self.radius = 110
 
-        # Kolory zintegrowane z nowym motywem (Teal & Dark Blue)
         self.sky_color = theme.COLOR_TEAL
         self.ground_color = theme.COLOR_BLACK
         self.line_color = theme.COLOR_LIGHT_GRAY
         self.accent_color = theme.STATUS_AMBER
 
-        # Tagi dla transformacji GPU
         self.horizon_node = dpg.generate_uuid()
         self.pitch_indicator = dpg.generate_uuid()
         self.roll_indicator = dpg.generate_uuid()
@@ -28,9 +26,7 @@ class NavballWidget:
     def _build_ui(self, parent_tag):
         with dpg.drawlist(width=self.width, height=self.height, parent=parent_tag):
 
-            # --- 1. SFERA (HORIZON NODE) ---
             with dpg.draw_node(tag=self.horizon_node):
-                # Niebo (Teal) i Ziemia (Black)
                 dpg.draw_rectangle((-400, -400), (400, 0), color=self.sky_color, fill=self.sky_color)
                 dpg.draw_rectangle((-400, 0), (400, 400), color=self.ground_color, fill=self.ground_color)
 

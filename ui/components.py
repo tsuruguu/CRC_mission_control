@@ -8,14 +8,17 @@ import logging
 
 logger = logging.getLogger("MissionControl")
 
-
 class StatusIndicator:
     """Komponent obsługujący 5-kolorową diodę statusu oraz wskaźniki aktywności RX/TX."""
 
     @staticmethod
+    def set_led(tag, color):
+        """Uniwersalna metoda do ustawiania koloru dowolnego LED-a[cite: 40]."""
+        dpg.configure_item(tag, fill=color)
+
+    @staticmethod
     def set_main_led(status: ConnectionStatus):
-        """Ustawia kolor głównego LED-a zgodnie z logiką połączenia[cite: 2, 11]."""
-        # status.value zawiera krotkę (R, G, B) zdefiniowaną w data_types.py[cite: 5]
+        """Ustawia kolor głównego LED-a zgodnie ze stanem połączenia[cite: 40]."""
         dpg.configure_item("main_status_led", fill=status.value)
 
     @staticmethod
@@ -38,25 +41,50 @@ class TerminalComponent:
         self.parent_tag = parent_tag
         self.scroll_check_tag = scroll_check_tag  # Dynamiczny tag checkboxa
         self.buffer = []
-        self.max_lines = 500
+        self.max_lines = 300
+        self._needs_update = False
+        self._last_scroll_state = True
 
     def append(self, text: str, level=None):
         self.buffer.append(text)
         if len(self.buffer) > self.max_lines:
             self.buffer.pop(0)
+        self._needs_update = True
 
-        dpg.set_value(self.tag, "\n".join(self.buffer))
+    def update_ui(self):
+        """Wywoływane raz na klatkę w pętli głównej."""
+        current_scroll_state = dpg.get_value(self.scroll_check_tag)
 
-        if dpg.get_value(self.scroll_check_tag):
-            dpg.set_y_scroll(self.parent_tag, 100000)
+        # Wykrywamy moment włączenia checkboxa (Toggle ON)
+        toggled_on = current_scroll_state and not self._last_scroll_state
+        self._last_scroll_state = current_scroll_state
+
+        # 1. Jeśli doszły nowe dane - aktualizujemy tekst
+        if self._needs_update:
+            dpg.set_value(self.tag, "\n".join(self.buffer))
+            self._needs_update = False
+
+            # Jeśli autoscroll jest ON, przewijamy przy nowych danych
+            if current_scroll_state:
+                self._do_scroll()
+
+        # 2. Jeśli użytkownik właśnie zaznaczył AUTO (nawet bez nowych danych) - skocz na dół
+        elif toggled_on:
+            self._do_scroll()
+
+    def _do_scroll(self):
+        """Wewnętrzna metoda do przewijania na sam dół."""
+        try:
+            # Używamy bardzo dużej wartości, by mieć pewność, że dotrzemy do końca
+            dpg.set_y_scroll(self.parent_tag, 1000000)
+        except:
+            pass
 
     def clear(self):
-        """Czyści całą zawartość okna terminala[cite: 15]."""
         self.buffer = []
         dpg.set_value(self.tag, "")
-        # Resetujemy scroll na górę po czyszczeniu
         dpg.set_y_scroll(self.parent_tag, 0.0)
-        logger.info(f"Terminal {self.tag} cleared")
+        self._needs_update = False
 
 
 class FlightDataDisplays:
