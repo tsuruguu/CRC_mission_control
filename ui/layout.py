@@ -46,21 +46,22 @@ class MissionControlLayout:
             # --- 2. MAIN NAVIGATION TABS ---
             with dpg.tab_bar():
                 # KARTA 1: HARDWARE (Przeniesiona dotychczasowa logika)[cite: 14]
-                with dpg.tab(label="HARDWARE"):
+                with dpg.tab(label="COMMUNICATION"):
                     with dpg.group(horizontal=True):
-                        # Lewa strona: Telemetry Feed
-                        with dpg.child_window(width=-420, border=True, tag="terminal_container"):  # Dodaj tag tutaj
+                        # Używamy ujemnej szerokości, aby terminal zabierał wszystko POZA miejscem na Navball
+                        with dpg.child_window(width=-400, border=True, tag="raw_telemetry_container"):
                             dpg.add_text("TELEMETRY FEED", color=theme.SKYLINK_TEAL)
-                            dpg.add_input_text(multiline=True, width=-1, height=-1, readonly=True, tag=self.terminal_id)
+                            dpg.add_input_text(multiline=True, width=-1, height=-1, readonly=True,
+                                               tag="raw_telemetry_feed")
 
-                        # Prawa strona: Navball & Flight Metrics
-                        with dpg.child_window(width=410, border=True):
+                        # Navball ma stałą szerokość, co zapobiega jego deformacji na małych ekranach
+                        with dpg.child_window(width=380, border=True):
                             nav_container = dpg.add_child_window(height=350, border=False)
                             self.navball = NavballWidget(nav_container)
                             dpg.add_separator()
+                            # Dane pod Navballem
                             dpg.add_text("STATE: IDLE", tag="state_display")
                             dpg.add_text("ALTITUDE: 0.0 m", tag="alt_display")
-                            dpg.add_text("VOLTAGE: 0.0 V", tag="volt_display")
 
                 # KARTA 2: PAYLOAD (Zgodnie z Unknown-4_2.jpg)[cite: 1, 14]
                 with dpg.tab(label="PAYLOAD"):
@@ -90,6 +91,122 @@ class MissionControlLayout:
                         y_axis = dpg.add_plot_axis(dpg.mvYAxis, label="Temp (°C)", tag="temp_y_axis")
                         dpg.add_line_series([], [], label="Temp Trend", parent=y_axis, tag="temp_plot_series")
 
+                # KARTA 2: HARDWARE
+                with dpg.tab(label="HARDWARE"):
+                    # Dodajemy horizontal_scrollbar=True, aby na 768p można było przesunąć widok
+                    with dpg.child_window(width=-1, height=-1, border=False, horizontal_scrollbar=True):
+                        dpg.add_spacer(height=10)
+
+                        # Pasek górny Hardware
+                        with dpg.group(horizontal=True):
+                            dpg.add_text("Crc 2026 Rocket Hardware", color=theme.SKYLINK_TEAL)
+                            # Używamy spacji relatywnej zamiast stałej liczby pikseli
+                            dpg.add_spacer(width=50)
+                            dpg.add_button(label="Maintenance", width=120)
+                            dpg.add_button(label="Snapshot", width=100)
+
+                        dpg.add_spacer(height=10)
+
+                        # Panele Hardware w grupie poziomej
+                        with dpg.group(horizontal=True):
+                            panel_w = 125
+                            panel_h = 220
+
+                            with dpg.child_window(width=panel_w, height=panel_h, border=True):
+                                dpg.add_text("IMU_MPU9250", color=theme.TEXT_DIM)
+
+                            with dpg.child_window(width=panel_w, height=panel_h, border=True):
+                                dpg.add_text("BARO_BMP280", color=theme.TEXT_DIM)
+
+                            with dpg.child_window(width=panel_w, height=panel_h, border=True):
+                                dpg.add_text("GPS_GP02", color=theme.TEXT_DIM)
+
+                            with dpg.child_window(width=panel_w, height=panel_h, border=True):
+                                dpg.add_text("BODY_STRESS", color=theme.TEXT_DIM)
+
+                            with dpg.child_window(width=panel_w, height=panel_h, border=True):
+                                dpg.add_text("AERO_FINS", color=theme.TEXT_DIM)
+                                dpg.add_spacer(height=20)
+                                dpg.add_text("0", indent=55)
+                                dpg.add_input_text(width=-1, default_value="--")
+                                dpg.add_button(label="SET", width=-1)
+                                dpg.add_spacer(height=10)
+                                dpg.add_button(label="OPEN", width=-1)
+                                dpg.add_button(label="CLOSE", width=-1)
+
+                            with dpg.child_window(width=panel_w, height=panel_h, border=True):
+                                dpg.add_text("RECOVERY_SYS", color=theme.TEXT_DIM)
+                                dpg.add_text("ARMED", color=theme.TEXT_DIM)
+                                dpg.add_spacer(height=30)
+                                dpg.add_button(label="ARM", width=-1)
+                                dpg.add_button(label="DISARM", width=-1)
+
+                            with dpg.child_window(width=panel_w, height=panel_h, border=True):
+                                dpg.add_text("BATTERY", color=theme.TEXT_DIM)
+                                dpg.add_spacer(height=50)
+                                dpg.add_button(label="OPEN", width=-1)
+                                dpg.add_button(label="CLOSE", width=-1)
+
+                            with dpg.child_window(width=panel_w, height=panel_h, border=True):
+                                dpg.add_text("SD_LOGGER", color=theme.TEXT_DIM)
+                                dpg.add_spacer(height=25)
+                                dpg.add_button(label="START", width=-1)
+                                dpg.add_button(label="STOP", width=-1)
+                                dpg.add_button(label="ERASE", width=-1)
+
+                            with dpg.child_window(width=panel_w, height=panel_h, border=True):
+                                dpg.add_text("BUZZER_LEDS", color=theme.TEXT_DIM)
+                                dpg.add_spacer(height=50)
+                                dpg.add_button(label="OPEN", width=-1)
+                                dpg.add_button(label="CLOSE", width=-1)
+
+                            with dpg.child_window(width=panel_w + 15, height=panel_h, border=True):
+                                dpg.add_text("FLIGHT_SCHED", color=theme.TEXT_DIM)
+                                dpg.add_text("Seq State Unk", color=theme.TEXT_DIM, wrap=120)
+                                dpg.add_spacer(height=10)
+                                with dpg.group(horizontal=True):
+                                    dpg.add_button(label="START", width=60)
+                                    dpg.add_button(label="CLEAR", width=60)
+
+
+
+                # KARTA 3: SEQUENCES
+                with dpg.tab(label="SEQUENCES"):
+                    dpg.add_spacer(height=10)
+                    with dpg.group(horizontal=True):
+                        dpg.add_text("Sequences", indent=250)
+                        dpg.add_combo(items=[], width=300)
+                        dpg.add_button(label="NEW", width=80)
+                        dpg.add_button(label="EDIT", width=80)
+                        dpg.add_button(label="SEND", width=80)
+
+                    dpg.add_spacer(height=20)
+                    with dpg.group(horizontal=True):
+                        dpg.add_text("DEVICE", indent=100)
+                        dpg.add_text("NAME", indent=300)
+                        dpg.add_text("OPERATION", indent=500)
+                        dpg.add_text("START AFTER", indent=700)
+                        dpg.add_text("PAYLOAD", indent=900)
+
+                    dpg.add_separator()
+                    dpg.add_spacer(height=80)
+
+                    dpg.add_text("NO VALID SEQUENCE AVAILABLE\nPLEASE CHANGE THE HARDWARE CONFIG",
+                                 color=theme.TEXT_DIM, indent=450)
+
+                # KARTA 4: LOGGER (Przeniesiony terminal z logami)
+                with dpg.tab(label="LOGGER"):
+                    dpg.add_spacer(height=10)
+                    with dpg.group(horizontal=True):
+                        dpg.add_text("Ground Station Logs", indent=400)
+                        dpg.add_spacer(width=300)
+                        dpg.add_text("Log level:")
+                        dpg.add_combo(items=["INFO", "DEBUG", "WARNING", "ERROR"], default_value="INFO", width=100)
+
+                    # Tutaj przypisujemy TAG terminal_container, z którego korzysta autoscroll
+                    with dpg.child_window(width=-1, height=-1, border=False, tag="terminal_container"):
+                        dpg.add_input_text(multiline=True, width=-1, height=-1, readonly=True, tag=self.terminal_id)
+
             # --- 3. BOTTOM BAR (COMMANDS & TERMINAL CONTROLS) ---
             # Pasek wpisywania komend oraz przyciski obsługi terminala[cite: 11, 14]
             with dpg.child_window(height=50, border=False):
@@ -99,33 +216,24 @@ class MissionControlLayout:
                     dpg.add_button(label="CLEAR", width=80, tag="clear_btn")
                     dpg.add_checkbox(label="AUTOSCROLL", default_value=True, tag="autoscroll_check")
 
-            # --- 4. MISSION CRITICAL BAR (BOTTOM BUTTONS) ---
-            # Odzwierciedlenie kolorowych przycisków z Twojego raportu
-            with dpg.child_window(height=45, border=False):
+            # --- 4. MISSION CRITICAL BAR (Poprawka stabilności) ---
+            with dpg.child_window(height=50, border=False):
                 with dpg.group(horizontal=True):
-                    # ARM & SYNC (Usuwamy 'color=')
-                    arm_btn = dpg.add_button(label="ARM & SYNC", width=150, tag="arm_btn")
-                    dpg.bind_item_theme(arm_btn, theme.create_button_theme(theme.STATUS_BLUE))
-
-                    # DISARM
-                    disarm_btn = dpg.add_button(label="DISARM", width=120, tag="disarm_btn")
-                    dpg.bind_item_theme(disarm_btn, theme.create_button_theme(theme.STATUS_AMBER))
-
-                    # RESET
-                    reset_btn = dpg.add_button(label="RESET DYNAMIXELS", width=180, tag="reset_btn")
-                    dpg.bind_item_theme(reset_btn, theme.create_button_theme(theme.STATUS_RED))
+                    # Grupa lewa
+                    with dpg.group(horizontal=True, width=400):
+                        dpg.add_button(label="ARM & SYNC", width=130, tag="arm_btn")
+                        dpg.add_button(label="DISARM", width=100, tag="disarm_btn")
+                        dpg.add_button(label="RESET", width=100, tag="reset_btn")
 
                     dpg.add_spacer(width=20)
-                    dpg.add_text("SYSTEM READY", tag="status_msg_text", color=theme.STATUS_GREEN)
-
+                    dpg.add_text("STATION READY", color=theme.STATUS_GREEN)
                     dpg.add_spacer(width=20)
 
-                    dpg.add_button(label="DEPLOY DROGUE", width=140, tag="drogue_btn")
-                    dpg.add_button(label="DEPLOY MAIN", width=140, tag="main_para_btn")
+                    # Grupa prawa (używamy indent, aby przykleić ABORT do prawej strony na 1080p)
+                    dpg.add_button(label="DROGUE", width=110, tag="drogue_btn")
+                    dpg.add_button(label="MAIN", width=110, tag="main_para_btn")
+                    dpg.add_button(label="ABORT", width=90, tag="abort_btn")
 
-                    # ABORT
-                    abort_btn = dpg.add_button(label="ABORT", width=100, tag="abort_btn")
-                    dpg.bind_item_theme(abort_btn, theme.create_button_theme(theme.STATUS_RED))
 
     def update_led(self, tag, color):
         """Metoda uaktualniająca kolor kółka rysowanego w Drawlist[cite: 14]."""

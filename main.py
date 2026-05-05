@@ -31,6 +31,8 @@ class MissionControlApp:
         """Konfiguracja okna i callbacków[cite: 18]."""
         self.logger.info("Initializing UI Layout...")  # <--- LOG STARTU UI[cite: 21]
         dpg.create_viewport(title='FST AGH - Mission Control v2', width=1300, height=800)
+        dpg.set_viewport_min_width(1200)
+        dpg.set_viewport_min_height(700)
         self.layout.create_layout()
         self.payload_mgr = PayloadManager("temp_plot_series")
 
