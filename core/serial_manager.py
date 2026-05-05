@@ -3,6 +3,8 @@ import serial.tools.list_ports
 import threading
 import queue
 import time
+import logging
+
 from core.data_types import ConnectionStatus
 
 
@@ -13,6 +15,7 @@ class SerialManager:
         self.read_thread = None
         self.raw_queue = queue.Queue()  # Kolejka surowych linii dla parsera
         self.status = ConnectionStatus.DISCONNECTED
+        self.logger = logging.getLogger("MissionControl")
 
         # Statystyki wydajności dla UI
         self.bitrate = 0.0
@@ -25,26 +28,31 @@ class SerialManager:
 
     def connect(self, port, baudrate=115200):
         """Inicjalizuje połączenie z STM32/LoRa."""
+        self.logger.info(f"Attempting to connect to {port} at {baudrate} baud...")  # <--- LOG INFO
         try:
-            # timeout=0.1 zapobiega blokowaniu wątku przy braku danych
             self.ser = serial.Serial(port, baudrate, timeout=0.1)
             self.is_running = True
             self.read_thread = threading.Thread(target=self._read_loop, daemon=True)
             self.read_thread.start()
             self.status = ConnectionStatus.CONNECTED
+            self.logger.info(f"Successfully connected to {port}")  # <--- LOG INFO[cite: 3, 4, 24]
             return True
         except Exception as e:
-            print(f"Connection Error: {e}")
+            self.logger.error(f"Failed to connect to {port}: {e}")  # <--- LOG ERROR[cite: 4, 24]
             self.status = ConnectionStatus.ERROR
             return False
 
     def disconnect(self):
-        """Zatrzymuje wątek i bezpiecznie zamyka port[cite: 3]."""
+        """Zatrzymuje wątek i bezpiecznie zamyka port."""
+        if not self.is_running:
+            return
+
         self.is_running = False
         if self.read_thread:
             self.read_thread.join(timeout=1.0)
         if self.ser and self.ser.is_open:
             self.ser.close()
+            self.logger.warning("Serial connection closed by user")  # <--- LOG WARNING[cite: 4, 24]
         self.status = ConnectionStatus.DISCONNECTED
 
     def _read_loop(self):
@@ -65,6 +73,7 @@ class SerialManager:
                     self._update_bitrate()
 
                 except Exception:
+                    self.logger.critical(f"Serial read error: {e}")
                     self.status = ConnectionStatus.ERROR
                     self.is_running = False
             time.sleep(0.001)  # Minimalne opóźnienie dla zachowania responsywności CPU
@@ -79,11 +88,13 @@ class SerialManager:
             self._last_stat_time = now
 
     def send_data(self, data):
-        """Wysyła komendy (np. ARM, DISARM) do rakiety[cite: 1, 3]."""
+        """Wysyła komendy do rakiety."""
         if self.ser and self.ser.is_open:
             try:
                 self.ser.write(f"{data}\n".encode())
+                self.logger.debug(f"Raw data sent: {data}")  # <--- LOG DEBUG[cite: 4, 24]
                 return True
-            except Exception:
+            except Exception as e:
+                self.logger.error(f"Failed to send data '{data}': {e}")  # <--- LOG ERROR[cite: 4, 24]
                 self.status = ConnectionStatus.ERROR
         return False

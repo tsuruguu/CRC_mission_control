@@ -50,7 +50,9 @@ class TerminalComponent:
             dpg.set_y_scroll(self.tag, -1.0)
 
     def clear(self):
-        """Czyści całą zawartość okna terminala[cite: 11]."""
+        """Czyści całą zawartość okna terminala[cite: 15]."""
+        import logging
+        logging.getLogger("MissionControl").info("User cleared terminal buffer")  # <--- LOG CLEAR[cite: 21]
         self.buffer = []
         dpg.set_value(self.tag, "")
 
@@ -59,17 +61,26 @@ class FlightDataDisplays:
     """Zarządzanie dynamicznymi wskaźnikami tekstowymi telemetrii[cite: 1, 11]."""
 
     @staticmethod
-    def update_state(state: MissionState):
-        """Aktualizuje stan misji z odpowiednim kodowaniem kolorystycznym[cite: 1, 11]."""
-        color = theme.TEXT_MAIN
-        # Logika kolorów dla kluczowych faz lotu[cite: 11]
-        if state == MissionState.ASCENT: color = theme.STATUS_BLUE
-        if state == MissionState.APOGEE: color = theme.STATUS_AMBER
-        if state in [MissionState.LANDING, MissionState.IDLE]: color = theme.STATUS_GREEN
-        if state == MissionState.EMERGENCY: color = theme.STATUS_RED
+    def update_metrics(alt: float, volt: float, temp: float, strain: float):
+        """Aktualizuje liczbowe dane telemetryczne i monitoruje bezpieczeństwo[cite: 1, 11]."""
+        import logging
+        logger = logging.getLogger("MissionControl")
 
-        dpg.set_value("state_display", f"STATE: {state.value}")
-        dpg.configure_item("state_display", color=color)
+        dpg.set_value("alt_display", f"ALTITUDE: {alt:.1f} m")
+        dpg.set_value("temp_display", f"PAYLOAD TEMP: {temp:.1f} °C")
+
+        dpg.set_value("volt_display", f"VOLTAGE: {volt:.2f} V")
+        if volt < 3.4:
+            dpg.configure_item("volt_display", color=theme.STATUS_RED)
+            # Loguj rzadziej (np. tylko przy pierwszym spadku) lub na poziomie DEBUG
+        else:
+            dpg.configure_item("volt_display", color=theme.TEXT_MAIN)
+
+        if strain > 100.0:
+            dpg.configure_item("status_msg_text", color=theme.STATUS_AMBER)
+            dpg.set_value("status_msg_text", "HIGH STRAIN DETECTED")
+            # DODAJ TO: Zapis do pliku logów[cite: 21]
+            logger.warning(f"KRYTYCZNE NAPRĘŻENIA KONSTRUKCJI: {strain:.2f}")
 
     @staticmethod
     def update_metrics(alt: float, volt: float, temp: float, strain: float):

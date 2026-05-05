@@ -26,7 +26,8 @@ class MissionControlApp:
         theme.setup_fonts()
 
     def setup(self):
-        """Konfiguracja okna i callbacków."""
+        """Konfiguracja okna i callbacków[cite: 18]."""
+        self.logger.info("Initializing UI Layout...")  # <--- LOG STARTU UI[cite: 21]
         dpg.create_viewport(title='FST AGH - Mission Control v2', width=1300, height=800)
         self.layout.create_layout()
 
@@ -43,6 +44,10 @@ class MissionControlApp:
         # Przyciski krytyczne[cite: 1]
         dpg.configure_item("arm_btn", callback=lambda: self._send_cmd("ARM"))
         dpg.configure_item("abort_btn", callback=lambda: self._send_cmd("ABORT"))
+
+        dpg.configure_item("drogue_btn", callback=lambda: self._send_cmd("DEPLOY_DROGUE"))
+        dpg.configure_item("main_para_btn", callback=lambda: self._send_cmd("DEPLOY_MAIN"))
+        dpg.configure_item("reset_btn", callback=lambda: self._send_cmd("RESET_DYNAMIXELS"))
 
     def _on_scan(self):
         """Skanowanie dostępnych portów COM."""
@@ -113,6 +118,7 @@ class MissionControlApp:
             dpg.render_dearpygui_frame()
 
         # Shutdown
+        self.logger.info("Mission Control Session Ended")  # <--- DODAJ TO[cite: 21]
         self.serial.disconnect()
         dpg.destroy_context()
 

@@ -1,4 +1,5 @@
 import dearpygui.dearpygui as dpg
+import logging
 
 # --- PALETA KOLORÓW SKYLINK AGH ---
 SKYLINK_TEAL = (0, 168, 150, 255)
@@ -67,17 +68,26 @@ def apply_skylink_theme():
     dpg.bind_theme(global_theme)
 
 
+import logging  # <--- DODAJ IMPORT
+
+
 def setup_fonts():
-    """Inicjalizuje system typograficzny dla interfejsu[cite: 12]."""
+    logger = logging.getLogger("MissionControl")  # <--- POBIERZ LOGGER[cite: 21]
     with dpg.font_registry():
         try:
-            # Inter: UI, przyciski, opisy (standard nowoczesnego softu)
+            # Próba załadowania fontów[cite: 16]
             default_font = dpg.add_font("assets/fonts/Inter-Regular.ttf", 16)
-            # JetBrains Mono: Telemetria i Logi (idealne wyrównanie cyfr)
+
+            with dpg.font(default_font):
+                dpg.add_font_range_hint(dpg.mvFontRangeHint_Default)
+                dpg.add_font_range(0xf000, 0xf8ff)
+                dpg.add_font("assets/fonts/fa-solid-900.otf", 16)
+
             mono_font = dpg.add_font("assets/fonts/JetBrainsMono-Bold.ttf", 14)
 
             dpg.bind_font(default_font)
+            logger.info("UI Fonts loaded successfully")  # <--- LOG SUKCESU[cite: 21]
             return mono_font
         except Exception as e:
-            print(f"Ostrzeżenie: Nie znaleziono fontów ({e}). Używam systemowych.")
+            logger.error(f"KRYTYCZNY BŁĄD CZCIONEK: {e}")  # <--- LOG BŁĘDU[cite: 21]
             return None
