@@ -7,6 +7,7 @@ from core.data_types import ConnectionStatus
 from ui.layout import MissionControlLayout
 from ui.components import StatusIndicator, TerminalComponent, FlightDataDisplays
 import ui.theme as theme
+from ui.components import PayloadManager
 
 
 class MissionControlApp:
@@ -19,6 +20,7 @@ class MissionControlApp:
         # Inicjalizacja UI[cite: 11, 14]
         self.layout = MissionControlLayout()
         self.terminal = None
+        self.payload_mgr = None
 
         # Setup DPG[cite: 12]
         dpg.create_context()
@@ -30,9 +32,10 @@ class MissionControlApp:
         self.logger.info("Initializing UI Layout...")  # <--- LOG STARTU UI[cite: 21]
         dpg.create_viewport(title='FST AGH - Mission Control v2', width=1300, height=800)
         self.layout.create_layout()
+        self.payload_mgr = PayloadManager("temp_plot_series")
 
         # Inicjalizacja terminala i podpięcie loggera[cite: 4, 11]
-        self.terminal = TerminalComponent(self.layout.terminal_id)
+        self.terminal = TerminalComponent(self.layout.terminal_id, "terminal_container")
         self.logger.add_ui_handler(self.terminal.append)
 
         # Podpięcie callbacków do przycisków[cite: 14]
@@ -108,6 +111,8 @@ class MissionControlApp:
                     FlightDataDisplays.update_metrics(
                         frame.altitude, frame.voltage, frame.temp, frame.strain_gauge
                     )
+                    if self.payload_mgr:
+                        self.payload_mgr.update(frame.temp_payload, frame.current)
 
             # 2. Aktualizacja statusów systemowych[cite: 11, 14]
             current_status = self.parser.get_connection_status()

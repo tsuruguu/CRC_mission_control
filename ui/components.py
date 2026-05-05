@@ -1,6 +1,9 @@
 import dearpygui.dearpygui as dpg
 from core.data_types import ConnectionStatus, MissionState
 import ui.theme as theme
+from collections import deque
+import numpy as np
+import time
 
 
 class StatusIndicator:
@@ -25,29 +28,29 @@ class StatusIndicator:
 
 
 class TerminalComponent:
-    """Zaawansowana obsługa logów systemowych i telemetrii[cite: 11]."""
+    """Zaawansowana obsługa logów systemowych i telemetrii."""
 
-    def __init__(self, item_tag):
+    def __init__(self, item_tag, parent_tag): # DODAJ parent_tag tutaj
         self.tag = item_tag
+        self.parent_tag = parent_tag          # PRZYPISZ go do instancji
         self.buffer = []
-        self.max_lines = 1000  # Zwiększony limit dla lepszej diagnostyki[cite: 11]
+        self.max_lines = 1000
 
     def append(self, text: str, level: str = "INFO"):
-        """Dodaje sformatowaną linię do terminala z obsługą poziomów logowania[cite: 4, 11]."""
-        timestamp = dpg.get_value("bitrate_text")  # Opcjonalnie można użyć czasu systemowego
         new_line = f"[{level}] {text}"
         self.buffer.append(new_line)
 
-        # Utrzymywanie wydajności poprzez limitowanie bufora[cite: 11]
         if len(self.buffer) > self.max_lines:
             self.buffer.pop(0)
 
-        # Aktualizacja widżetu w DPG
         dpg.set_value(self.tag, "\n".join(self.buffer))
 
-        # Obsługa automatycznego przewijania (Autoscroll)[cite: 11, 14]
+        # KLUCZOWA ZMIANA: Przewijamy kontener (parent), a nie input_text
         if dpg.get_value("autoscroll_check"):
-            dpg.set_y_scroll(self.tag, -1.0)
+            try:
+                dpg.set_y_scroll(self.parent_tag, -1.0)
+            except:
+                pass
 
     def clear(self):
         """Czyści całą zawartość okna terminala[cite: 15]."""
@@ -99,3 +102,31 @@ class FlightDataDisplays:
         if strain > 100.0:  # Przykładowy próg wytrzymałości konstrukcji
             dpg.configure_item("status_msg_text", color=theme.STATUS_AMBER)
             dpg.set_value("status_msg_text", "HIGH STRAIN DETECTED")
+
+
+class PayloadManager:
+    """Zarządza danymi wykresu i dużymi wyświetlaczami Payloadu[cite: 1, 13]."""
+
+    def __init__(self, plot_tag, max_points=200):
+        self.plot_tag = plot_tag
+        self.max_points = max_points
+        self.times = deque(maxlen=max_points)
+        self.temps = deque(maxlen=max_points)
+        self.start_time = time.time()
+
+    def update(self, temp_val, uv_val=0):
+        """Aktualizuje dane na wykresie i wskaźnikach tekstowych[cite: 13, 23]."""
+        elapsed = time.time() - self.start_time
+        self.times.append(elapsed)
+        self.temps.append(temp_val)
+
+        # NumPy optymalizuje przesyłanie danych do GPU[cite: 13, 28]
+        dpg.set_value(self.plot_tag, [list(self.times), list(self.temps)])
+
+        # Aktualizacja dużych napisów z Unknown-4_2.jpg[cite: 14]
+        dpg.set_value("big_temp_val", f"{temp_val:.1f} °C")
+        dpg.set_value("big_uv_val", f"{int(uv_val)}")
+
+        # Przesunięcie osi czasu
+        if len(self.times) > 1:
+            dpg.set_axis_limits("temp_x_axis", self.times[0], self.times[-1])

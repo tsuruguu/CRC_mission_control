@@ -1,5 +1,6 @@
 import dearpygui.dearpygui as dpg
 import logging
+import os
 
 # --- PALETA KOLORÓW SKYLINK AGH ---
 SKYLINK_TEAL = (0, 168, 150, 255)
@@ -63,31 +64,34 @@ def apply_skylink_theme():
             dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing, 10, 8)  # Więcej oddechu
             dpg.add_theme_style(dpg.mvStyleVar_ScrollbarSize, 12)
             dpg.add_theme_style(dpg.mvStyleVar_ScrollbarRounding, 12)
-            dpg.add_theme_style(dpg.mvStyleVar_SeparatorTextPadding, 10, 10)
 
     dpg.bind_theme(global_theme)
 
-
-import logging  # <--- DODAJ IMPORT
-
-
 def setup_fonts():
-    logger = logging.getLogger("MissionControl")  # <--- POBIERZ LOGGER[cite: 21]
-    with dpg.font_registry():
-        try:
-            # Próba załadowania fontów[cite: 16]
-            default_font = dpg.add_font("assets/fonts/Inter-Regular.ttf", 16)
+    logger = logging.getLogger("MissionControl")
+    font_path = "assets/fonts/Inter-Regular.ttf"
 
-            with dpg.font(default_font):
+    if not os.path.exists(font_path):
+        logger.error(f"Nie znaleziono pliku czcionki w: {os.path.abspath(font_path)}")
+        return None
+
+    try:
+        with dpg.font_registry():
+            # Używaj tylko sprawdzonych plików ttf na początku
+            with dpg.font(font_path, 16) as default_font:
                 dpg.add_font_range_hint(dpg.mvFontRangeHint_Default)
-                dpg.add_font_range(0xf000, 0xf8ff)
-                dpg.add_font("assets/fonts/fa-solid-900.otf", 16)
-
-            mono_font = dpg.add_font("assets/fonts/JetBrainsMono-Bold.ttf", 14)
 
             dpg.bind_font(default_font)
-            logger.info("UI Fonts loaded successfully")  # <--- LOG SUKCESU[cite: 21]
-            return mono_font
-        except Exception as e:
-            logger.error(f"KRYTYCZNY BŁĄD CZCIONEK: {e}")  # <--- LOG BŁĘDU[cite: 21]
-            return None
+            return default_font
+    except Exception as e:
+        logger.error(f"Błąd czcionek: {e}")
+        return None
+
+def create_button_theme(color):
+    """Tworzy unikalny motyw kolorystyczny dla pojedynczego przycisku[cite: 12]."""
+    with dpg.theme() as btn_theme:
+        with dpg.theme_component(dpg.mvButton):
+            dpg.add_theme_color(dpg.mvThemeCol_Button, color)
+            dpg.add_theme_color(dpg.mvThemeCol_ButtonHovered, (color[0], color[1], color[2], 200))
+            dpg.add_theme_color(dpg.mvThemeCol_ButtonActive, (color[0], color[1], color[2], 150))
+    return btn_theme
