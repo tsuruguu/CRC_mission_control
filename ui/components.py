@@ -33,25 +33,22 @@ class StatusIndicator:
 class TerminalComponent:
     """Zaawansowana obsługa logów systemowych i telemetrii."""
 
-    def __init__(self, item_tag, parent_tag): # DODAJ parent_tag tutaj
+    def __init__(self, item_tag, parent_tag, scroll_check_tag="autoscroll_check"): # DODAJ parent_tag tutaj
         self.tag = item_tag
-        self.parent_tag = parent_tag          # PRZYPISZ go do instancji
+        self.parent_tag = parent_tag
+        self.scroll_check_tag = scroll_check_tag  # Dynamiczny tag checkboxa
         self.buffer = []
         self.max_lines = 500
 
     def append(self, text: str, level=None):
         self.buffer.append(text)
-
         if len(self.buffer) > self.max_lines:
             self.buffer.pop(0)
 
         dpg.set_value(self.tag, "\n".join(self.buffer))
 
-        if dpg.get_value("autoscroll_check"):
-            try:
-                dpg.set_y_scroll(self.parent_tag, -1.0)
-            except:
-                pass
+        if dpg.get_value(self.scroll_check_tag):
+            dpg.set_y_scroll(self.parent_tag, 100000)
 
     def clear(self):
         """Czyści całą zawartość okna terminala[cite: 15]."""

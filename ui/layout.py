@@ -54,8 +54,7 @@ class MissionControlLayout:
                                     dpg.add_button(label="CLEAR", tag="clear_raw_btn", small=True)
 
                                 with dpg.child_window(height=350, border=True, tag="raw_feed_container"):
-                                    dpg.add_input_text(multiline=True, width=-1, height=-1, readonly=True,
-                                                       tag="raw_telemetry_feed")
+                                    dpg.add_text("", tag="raw_telemetry_feed")
 
                                 dpg.add_spacer(height=10)
                                 dpg.add_separator()
@@ -68,8 +67,7 @@ class MissionControlLayout:
                                     dpg.add_button(label="CLEAR", tag="clear_cmd_btn", small=True)
 
                                 with dpg.child_window(height=-1, border=True, tag="command_console_container"):
-                                    dpg.add_input_text(multiline=True, width=-1, height=-1, readonly=True,
-                                                       tag="command_console")
+                                    dpg.add_text("", tag="command_console")
 
                             # Prawa kolumna: Navball i Wskaźniki
                             with dpg.child_window(width=380, border=True):
@@ -190,7 +188,7 @@ class MissionControlLayout:
                             dpg.add_text("Log level:")
                             dpg.add_combo(items=["INFO", "DEBUG", "WARNING", "ERROR"], default_value="INFO", width=100)
                         with dpg.child_window(width=-1, height=-1, border=False, tag="terminal_container"):
-                            dpg.add_input_text(multiline=True, width=-1, height=-1, readonly=True, tag=self.terminal_id)
+                            dpg.add_text("", tag=self.terminal_id)
 
             dpg.add_separator()
 

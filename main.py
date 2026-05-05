@@ -40,9 +40,26 @@ class MissionControlApp:
         self.layout.create_layout()
         self.payload_mgr = PayloadManager("temp_plot_series")
 
-        self.terminal = TerminalComponent(self.layout.terminal_id, "terminal_container")
-        self.terminal_raw = TerminalComponent("raw_telemetry_feed", "raw_feed_container")
-        self.terminal_cmd = TerminalComponent("command_console", "command_console_container")
+        # 1. Terminal główny (Logger) - korzysta z dolnego checkboxa
+        self.terminal = TerminalComponent(
+            self.layout.terminal_id,
+            "terminal_container",
+            "autoscroll_check"
+        )
+
+        # 2. Terminal RAW - korzysta z checkboxa w zakładce Communication
+        self.terminal_raw = TerminalComponent(
+            "raw_telemetry_feed",
+            "raw_feed_container",
+            "raw_autoscroll_check"
+        )
+
+        # 3. Terminal CMD - korzysta z drugiego checkboxa w zakładce
+        self.terminal_cmd = TerminalComponent(
+            "command_console",
+            "command_console_container",
+            "cmd_autoscroll_check"
+        )
 
         self.logger.add_ui_handler(self.terminal.append)
 
