@@ -3,53 +3,87 @@ import serial.tools.list_ports
 import threading
 import queue
 import time
+from core.data_types import ConnectionStatus
+
 
 class SerialManager:
     def __init__(self):
         self.ser = None
         self.is_running = False
         self.read_thread = None
-        self.raw_queue = queue.Queue()  # Telemetria do GUI
-        self.status = "DISCONNECTED"    # BLACK, GREEN, RED, YELLOW, BLUE
+        self.raw_queue = queue.Queue()  # Kolejka surowych linii dla parsera
+        self.status = ConnectionStatus.DISCONNECTED
+
+        # Statystyki wydajności dla UI
+        self.bitrate = 0.0
+        self._bytes_count = 0
+        self._last_stat_time = time.time()
 
     def scan_ports(self):
-        """Zwraca listę dostępnych portów COM."""
+        """Zwraca listę dostępnych portów COM/USB[cite: 3]."""
         return [port.device for port in serial.tools.list_ports.comports()]
 
     def connect(self, port, baudrate=115200):
+        """Inicjalizuje połączenie z STM32/LoRa."""
         try:
+            # timeout=0.1 zapobiega blokowaniu wątku przy braku danych
             self.ser = serial.Serial(port, baudrate, timeout=0.1)
             self.is_running = True
             self.read_thread = threading.Thread(target=self._read_loop, daemon=True)
             self.read_thread.start()
-            self.status = "CONNECTED"
+            self.status = ConnectionStatus.CONNECTED
             return True
         except Exception as e:
-            print(f"Błąd połączenia: {e}")
-            self.status = "ERROR"
+            print(f"Connection Error: {e}")
+            self.status = ConnectionStatus.ERROR
             return False
 
     def disconnect(self):
+        """Zatrzymuje wątek i bezpiecznie zamyka port[cite: 3]."""
         self.is_running = False
-        if self.ser:
+        if self.read_thread:
+            self.read_thread.join(timeout=1.0)
+        if self.ser and self.ser.is_open:
             self.ser.close()
-        self.status = "DISCONNECTED"
+        self.status = ConnectionStatus.DISCONNECTED
 
     def _read_loop(self):
-        """Wątek pracujący w tle, nie muli GUI."""
+        """Wątek w tle odciążający GUI od operacji I/O[cite: 3]."""
         while self.is_running:
-            if self.ser and self.ser.in_waiting > 0:
+            if self.ser and self.ser.is_open:
                 try:
-                    line = self.ser.readline().decode('utf-8').strip()
-                    if line:
-                        self.raw_queue.put(line)
+                    if self.ser.in_waiting > 0:
+                        line = self.ser.readline()
+                        self._bytes_count += len(line)
+
+                        # Próba dekodowania (ignorowanie błędnych bajtów LoRa)
+                        decoded_line = line.decode('utf-8', errors='ignore').strip()
+                        if decoded_line:
+                            self.raw_queue.put(decoded_line)
+
+                    # Obliczanie bitrate co 1 sekundę
+                    self._update_bitrate()
+
                 except Exception:
-                    self.status = "ERROR"
-            time.sleep(0.01) # Oszczędność CPU
+                    self.status = ConnectionStatus.ERROR
+                    self.is_running = False
+            time.sleep(0.001)  # Minimalne opóźnienie dla zachowania responsywności CPU
+
+    def _update_bitrate(self):
+        """Oblicza aktualną prędkość transmisji w kb/s."""
+        now = time.time()
+        diff = now - self._last_stat_time
+        if diff >= 1.0:
+            self.bitrate = (self._bytes_count * 8) / (diff * 1024)  # kb/s
+            self._bytes_count = 0
+            self._last_stat_time = now
 
     def send_data(self, data):
-        """Wysyła tekst do rakiety (np. komendy armingu)."""
+        """Wysyła komendy (np. ARM, DISARM) do rakiety[cite: 1, 3]."""
         if self.ser and self.ser.is_open:
-            self.ser.write(f"{data}\n".encode())
-            return True
+            try:
+                self.ser.write(f"{data}\n".encode())
+                return True
+            except Exception:
+                self.status = ConnectionStatus.ERROR
         return False

@@ -216,3 +216,15 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Python
+*.py[cod]
+
+# Mission Control Specific
+logs/
+assets/fonts/*.zip
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
