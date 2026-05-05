@@ -29,9 +29,11 @@ class MissionLogger:
         self.session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.telemetry_file = self.log_dir / f"telemetry_{self.session_id}.csv"
         self.system_file = self.log_dir / f"system_{self.session_id}.log"
+        self.raw_file = self.log_dir / f"raw_frames_{self.session_id}.csv"
 
         self._setup_system_logger()
         self._setup_csv_header()
+        self._setup_raw_header()
 
     def _setup_system_logger(self):
         """Konfiguracja loggera dla zdarzeń systemowych, błędów i ostrzeżeń[cite: 4]."""
@@ -107,3 +109,18 @@ class MissionLogger:
         formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] %(message)s', '%H:%M:%S')
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
+
+    def log_raw_frame(self, raw_line: str):
+        """Zapisuje każdą odebraną linię tekstu z portu COM do osobnego pliku."""
+        try:
+            with open(self.raw_file, 'a', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow([time.time(), raw_line])
+        except Exception as e:
+            self.error(f"Błąd zapisu surowej ramki: {e}")
+
+    def _setup_raw_header(self):
+        """Nagłówki dla pliku z surowymi danymi."""
+        with open(self.raw_file, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(["timestamp", "raw_data"])

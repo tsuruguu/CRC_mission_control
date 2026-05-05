@@ -2,6 +2,7 @@ import time
 import logging
 from typing import Optional
 from core.data_types import TelemetryFrame, MissionState, ConnectionStatus, Vector3
+from datetime import datetime
 
 class TelemetryParser:
     def __init__(self):
@@ -12,6 +13,7 @@ class TelemetryParser:
         self.logger = logging.getLogger("MissionControl")
         self._prev_mission_state = MissionState.IDLE
         self._prev_conn_status = ConnectionStatus.DISCONNECTED
+        self._last_drop_time = 0
 
     def parse_line(self, line: str) -> Optional[TelemetryFrame]:
         """
@@ -21,7 +23,7 @@ class TelemetryParser:
         try:
             parts = line.split(';')
             # Minimalna liczba elementów (bazując na raporcie avioniki[cite: 1])
-            if len(parts) < 15:
+            if len(parts) < 15 or not parts[0].strip():
                 return None
 
             f_id = int(parts[0])
@@ -31,8 +33,10 @@ class TelemetryParser:
                 dropped = f_id - self._last_frame_id - 1
                 if dropped > 0:
                     self.state.dropped_frames += dropped
+                    self._last_drop_time = time.time()
+                    timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]
                     self.logger.warning(
-                        f"Luka w telemetrii: zgubiono {dropped} ramek. Razem: {self.state.dropped_frames}"
+                        f"[{timestamp}] LUKA: Zgubiono {dropped} ramek (ID: {self._last_frame_id}->{f_id})"
                     )
 
             self._last_frame_id = f_id
@@ -87,14 +91,15 @@ class TelemetryParser:
         """
         now = time.time()
         time_since_last = now - self._last_valid_time
+        time_since_drop = now - self._last_drop_time
 
         # 1. Określenie bieżącego statusu[cite: 2, 25]
         if time_since_last > 2.0:
             current_status = ConnectionStatus.DISCONNECTED  # BLACK[cite: 2]
         elif self.state.voltage > 0 and self.state.voltage < 3.3:
             current_status = ConnectionStatus.ERROR  # RED[cite: 1, 25]
-        elif self.state.dropped_frames > 0:
-            current_status = ConnectionStatus.DROPPED_FRAMES  # YELLOW[cite: 2, 25]
+        elif time_since_drop < 0.5:
+            return ConnectionStatus.DROPPED_FRAMES
         else:
             current_status = ConnectionStatus.CONNECTED  # GREEN[cite: 2]
 

@@ -11,11 +11,11 @@ class NavballWidget:
         self.center_y = height / 2
         self.radius = 110  # Nieco większy promień dla czytelności
 
-        # Kolory zintegrowane z motywem Skylink
-        self.sky_color = (41, 128, 185, 255)
-        self.ground_color = (15, 15, 15, 255)
-        self.line_color = (255, 255, 255, 180)
-        self.accent_color = theme.STATUS_AMBER  # Wykorzystanie stałej z theme.py
+        # Kolory zintegrowane z nowym motywem (Teal & Dark Blue)
+        self.sky_color = theme.COLOR_TEAL
+        self.ground_color = theme.COLOR_BLACK
+        self.line_color = theme.COLOR_LIGHT_GRAY
+        self.accent_color = theme.STATUS_AMBER
 
         # Tagi dla transformacji GPU
         self.horizon_node = dpg.generate_uuid()
@@ -30,11 +30,11 @@ class NavballWidget:
 
             # --- 1. SFERA (HORIZON NODE) ---
             with dpg.draw_node(tag=self.horizon_node):
-                # Niebo i Ziemia
+                # Niebo (Teal) i Ziemia (Black)
                 dpg.draw_rectangle((-400, -400), (400, 0), color=self.sky_color, fill=self.sky_color)
                 dpg.draw_rectangle((-400, 0), (400, 400), color=self.ground_color, fill=self.ground_color)
 
-                # Drabinka Pitch (Pitch Ladder) - linie co 10 stopni
+                # Drabinka Pitch (Pitch Ladder)
                 for i in range(-90, 100, 10):
                     if i == 0: continue
                     y_pos = -(i / 90.0) * self.radius
@@ -43,24 +43,23 @@ class NavballWidget:
                     dpg.draw_text((-line_width - 25, y_pos - 7), str(i), size=12, color=self.line_color)
 
                 # Linia horyzontu (Główna)
-                dpg.draw_line((-400, 0), (400, 0), color=(255, 255, 255, 255), thickness=2)
+                dpg.draw_line((-400, 0), (400, 0), color=theme.COLOR_LIGHT_GRAY, thickness=2)
 
             # --- 2. MASKA KOŁOWA (DONUT TRICK) ---
-            # To maskuje rogi prostokątów, tworząc idealną sferę.
             mask_thickness = 200
             mask_radius = self.radius + (mask_thickness / 2)
-            dpg.draw_circle((self.center_x, self.center_y), mask_radius, color=theme.BG_SECONDARY,
+            dpg.draw_circle((self.center_x, self.center_y), mask_radius, color=theme.BG_PANEL,
                             thickness=mask_thickness)
 
-            # Obramowanie Navballa
-            dpg.draw_circle((self.center_x, self.center_y), self.radius, color=theme.SKYLINK_TEAL, thickness=2)
+            # Obramowanie Navballa (Teal)
+            dpg.draw_circle((self.center_x, self.center_y), self.radius, color=theme.ACCENT_PRIMARY, thickness=2)
 
             # --- 3. CELOWNIK STAŁY (WINGS) ---
             c_x, c_y = self.center_x, self.center_y
-            # Lewy "skrzydło"
+            # Lewe skrzydło
             dpg.draw_line((c_x - 50, c_y), (c_x - 15, c_y), color=theme.STATUS_AMBER, thickness=3)
             dpg.draw_line((c_x - 15, c_y), (c_x - 15, c_y + 10), color=theme.STATUS_AMBER, thickness=3)
-            # Prawy "skrzydło"
+            # Prawe skrzydło
             dpg.draw_line((c_x + 15, c_y), (c_x + 50, c_y), color=theme.STATUS_AMBER, thickness=3)
             dpg.draw_line((c_x + 15, c_y), (c_x + 15, c_y + 10), color=theme.STATUS_AMBER, thickness=3)
             # Kropka centralna
@@ -68,20 +67,20 @@ class NavballWidget:
 
             # --- 4. WSKAŹNIKI OSOWE (SLIDERS) ---
             # Yaw (Góra)
-            dpg.draw_rectangle((c_x - 80, c_y - 150), (c_x + 80, c_y - 142), color=theme.SKYLINK_TEAL_TRANSPARENT,
-                               fill=(15, 15, 15, 100))
+            dpg.draw_rectangle((c_x - 80, c_y - 150), (c_x + 80, c_y - 142), color=theme.ACCENT_TRANS,
+                               fill=theme.COLOR_BLACK)
             dpg.draw_triangle((c_x, c_y - 146), (c_x - 5, c_y - 136), (c_x + 5, c_y - 136), fill=theme.STATUS_AMBER,
                               tag=self.yaw_indicator)
 
             # Pitch (Lewo)
-            dpg.draw_rectangle((c_x - 155, c_y - 80), (c_x - 147, c_y + 80), color=theme.SKYLINK_TEAL_TRANSPARENT,
-                               fill=(15, 15, 15, 100))
+            dpg.draw_rectangle((c_x - 155, c_y - 80), (c_x - 147, c_y + 80), color=theme.ACCENT_TRANS,
+                               fill=theme.COLOR_BLACK)
             dpg.draw_circle((c_x - 151, c_y), 6, color=theme.STATUS_AMBER, fill=theme.STATUS_AMBER,
                             tag=self.pitch_indicator)
 
             # Roll (Prawo)
-            dpg.draw_rectangle((c_x + 147, c_y - 80), (c_x + 155, c_y + 80), color=theme.SKYLINK_TEAL_TRANSPARENT,
-                               fill=(15, 15, 15, 100))
+            dpg.draw_rectangle((c_x + 147, c_y - 80), (c_x + 155, c_y + 80), color=theme.ACCENT_TRANS,
+                               fill=theme.COLOR_BLACK)
             dpg.draw_circle((c_x + 151, c_y), 6, color=theme.STATUS_AMBER, fill=theme.STATUS_AMBER,
                             tag=self.roll_indicator)
 
@@ -91,23 +90,19 @@ class NavballWidget:
         # 1. Transformacja macierzowa horyzontu (Hardware Accelerated)
         pitch_px = (pitch / 90.0) * self.radius
 
-        # Macierze: Przesunięcie -> Rotacja -> Przesunięcie Pitch[cite: 13]
         trans_center = dpg.create_translation_matrix([self.center_x, self.center_y])
         rot_mat = dpg.create_rotation_matrix(math.radians(roll), [0, 0, -1])
         trans_pitch = dpg.create_translation_matrix([0, pitch_px])
 
         dpg.apply_transform(self.horizon_node, trans_center * rot_mat * trans_pitch)
 
-        # 2. Aktualizacja pozycji kulkowych wskaźników
-        # Yaw Slider (Mapowanie 180 -> 80px)
+        # 2. Aktualizacja pozycji wskaźników
         yaw_x = self.center_x + (yaw / 180.0) * 80
         dpg.configure_item(self.yaw_indicator, p1=(yaw_x, self.center_y - 146), p2=(yaw_x - 5, self.center_y - 136),
                            p3=(yaw_x + 5, self.center_y - 136))
 
-        # Pitch Slider
         p_y = self.center_y - (pitch / 90.0) * 80
         dpg.configure_item(self.pitch_indicator, center=(self.center_x - 151, p_y))
 
-        # Roll Slider
         r_y = self.center_y - (roll / 180.0) * 80
         dpg.configure_item(self.roll_indicator, center=(self.center_x + 151, r_y))

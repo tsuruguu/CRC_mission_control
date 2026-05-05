@@ -2,84 +2,69 @@ import dearpygui.dearpygui as dpg
 import logging
 import os
 
-# --- PALETA KOLORÓW SKYLINK AGH ---
-SKYLINK_TEAL = (0, 168, 150, 255)
-SKYLINK_TEAL_TRANSPARENT = (0, 168, 150, 80)
-SKYLINK_TEAL_BRIGHT = (0, 210, 190, 255)
+# --- DEFINICJA PALETY KOLORYSTYCZNEJ (ZGODNIE ZE ZDJĘCIEM) ---
+COLOR_TEAL = (9, 108, 108)  # #096C6C
+COLOR_LIGHT_GRAY = (196, 196, 196)  # #C4C4C4
+COLOR_BLACK = (0, 0, 0)  # #000000
+COLOR_DARK_BLUE = (22, 53, 77)  # #16354D
 
-# Tło i Warstwy (Dark Space Theme)
-BG_DARK = (11, 14, 20, 255)  # Główny panel
-BG_SECONDARY = (20, 25, 35, 255)  # Panele boczne (Child Windows)
-BG_WIDGET = (30, 38, 50, 255)  # Tło pól tekstowych i przycisków
+# Aliasy dla logiki UI
+ACCENT_PRIMARY = COLOR_TEAL
+ACCENT_TRANS = (9, 108, 108, 100)
+BG_PANEL = COLOR_BLACK
+BG_CHILD = COLOR_DARK_BLUE
+TEXT_NORMAL = COLOR_LIGHT_GRAY
+TEXT_MAIN = (255, 255, 255)
 
-# Typografia i Statusy
-TEXT_MAIN = (224, 224, 224, 255)  # Jasny szary[cite: 12]
-TEXT_DIM = (160, 160, 160, 255)  # Podpisy pomocnicze
-
-STATUS_GREEN = (46, 204, 113, 255)
-STATUS_RED = (231, 76, 60, 255)
-STATUS_AMBER = (241, 196, 15, 255)
-STATUS_BLUE = (52, 152, 219, 255)
+# Kolory statusów
+STATUS_RED = (230, 50, 50)
+STATUS_GREEN = (50, 230, 50)
+STATUS_BLUE = (0, 119, 255)
+STATUS_AMBER = (255, 191, 0)
 
 
 def apply_skylink_theme():
-    """Konfiguruje globalny styl graficzny stacji naziemnej[cite: 12]."""
+    """Konfiguruje nowy motyw wizualny oparty na ciemnej palecie morskiej."""
     with dpg.theme() as global_theme:
+        # 1. OGÓLNE STYLE INTERFEJSU
         with dpg.theme_component(dpg.mvAll):
-            # --- KOLORYSTYKA ---
-            # Okna i Panele
-            dpg.add_theme_color(dpg.mvThemeCol_WindowBg, BG_DARK)
-            dpg.add_theme_color(dpg.mvThemeCol_ChildBg, BG_SECONDARY)
-            dpg.add_theme_color(dpg.mvThemeCol_Border, SKYLINK_TEAL_TRANSPARENT)
-            dpg.add_theme_color(dpg.mvThemeCol_Separator, SKYLINK_TEAL_TRANSPARENT)
+            dpg.add_theme_color(dpg.mvThemeCol_WindowBg, COLOR_BLACK)
+            dpg.add_theme_color(dpg.mvThemeCol_ChildBg, COLOR_DARK_BLUE)
+            dpg.add_theme_color(dpg.mvThemeCol_TitleBgActive, COLOR_TEAL)
+            dpg.add_theme_color(dpg.mvThemeCol_Text, TEXT_NORMAL)
+            dpg.add_theme_color(dpg.mvThemeCol_Button, (30, 70, 100))
+            dpg.add_theme_color(dpg.mvThemeCol_ButtonHovered, COLOR_TEAL)
+            dpg.add_theme_color(dpg.mvThemeCol_TabActive, COLOR_TEAL)
+            dpg.add_theme_color(dpg.mvThemeCol_FrameBg, (10, 25, 40))
+            dpg.add_theme_color(dpg.mvThemeCol_CheckMark, COLOR_TEAL)
+            dpg.add_theme_style(dpg.mvStyleVar_WindowBorderSize, 0)
+            dpg.add_theme_style(dpg.mvStyleVar_ChildRounding, 4)
 
-            # Tekst i Nagłówki
-            dpg.add_theme_color(dpg.mvThemeCol_Text, TEXT_MAIN)
-            dpg.add_theme_color(dpg.mvThemeCol_TitleBgActive, SKYLINK_TEAL)
-            dpg.add_theme_color(dpg.mvThemeCol_Header, SKYLINK_TEAL_TRANSPARENT)
-            dpg.add_theme_color(dpg.mvThemeCol_HeaderHovered, SKYLINK_TEAL)
-
-            # Elementy Interaktywne (Przyciski, Checkboxy)
-            dpg.add_theme_color(dpg.mvThemeCol_Button, SKYLINK_TEAL_TRANSPARENT)
-            dpg.add_theme_color(dpg.mvThemeCol_ButtonHovered, SKYLINK_TEAL)
-            dpg.add_theme_color(dpg.mvThemeCol_ButtonActive, SKYLINK_TEAL_BRIGHT)
-            dpg.add_theme_color(dpg.mvThemeCol_CheckMark, SKYLINK_TEAL_BRIGHT)
-
-            # Pola wprowadzania (Terminal / Komendy)
-            dpg.add_theme_color(dpg.mvThemeCol_FrameBg, BG_WIDGET)
-            dpg.add_theme_color(dpg.mvThemeCol_FrameBgHovered, (45, 55, 75, 255))
-            dpg.add_theme_color(dpg.mvThemeCol_FrameBgActive, (50, 65, 90, 255))
-
-            # Scrollbar (Inżynieryjny look)
-            dpg.add_theme_color(dpg.mvThemeCol_ScrollbarBg, (0, 0, 0, 0))
-            dpg.add_theme_color(dpg.mvThemeCol_ScrollbarGrab, SKYLINK_TEAL_TRANSPARENT)
-            dpg.add_theme_color(dpg.mvThemeCol_ScrollbarGrabHovered, SKYLINK_TEAL)
-            dpg.add_theme_color(dpg.mvThemeCol_ScrollbarGrabActive, SKYLINK_TEAL_BRIGHT)
-
-            # --- GEOMETRIA I STYL (NASA MODERN) ---
-            dpg.add_theme_style(dpg.mvStyleVar_WindowRounding, 8)  # Zaokrąglenia[cite: 12]
-            dpg.add_theme_style(dpg.mvStyleVar_ChildRounding, 8)  # Większa spójność
-            dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 4)
-            dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, 15, 15)
-            dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing, 10, 8)  # Więcej oddechu
-            dpg.add_theme_style(dpg.mvStyleVar_ScrollbarSize, 12)
-            dpg.add_theme_style(dpg.mvStyleVar_ScrollbarRounding, 12)
+        # 2. POPRAWKA: STYLE DLA WYKRESÓW (PLOT)
+        with dpg.theme_component(dpg.mvPlot):
+            dpg.add_theme_color(dpg.mvPlotCol_PlotBg, (5, 15, 25), category=dpg.mvThemeCat_Plots)
+            dpg.add_theme_color(dpg.mvPlotCol_PlotBorder, COLOR_TEAL, category=dpg.mvThemeCat_Plots)
+            dpg.add_theme_color(dpg.mvPlotCol_Line, COLOR_TEAL, category=dpg.mvThemeCat_Plots)
 
     dpg.bind_theme(global_theme)
 
+
 def setup_fonts():
+    """Ustawia czcionkę systemową."""
     logger = logging.getLogger("MissionControl")
     font_path = "assets/fonts/Inter-Regular.ttf"
 
     if not os.path.exists(font_path):
-        logger.error(f"Nie znaleziono pliku czcionki w: {os.path.abspath(font_path)}")
         return None
 
     try:
         with dpg.font_registry():
-            # Używaj tylko sprawdzonych plików ttf na początku
-            with dpg.font(font_path, 16) as default_font:
+            with dpg.font(font_path, 15) as default_font:
                 dpg.add_font_range_hint(dpg.mvFontRangeHint_Default)
+
+            with dpg.font(font_path, 32) as big_font:
+                dpg.add_font_range_hint(dpg.mvFontRangeHint_Default)
+            dpg.add_alias("big_payload_font", big_font)
 
             dpg.bind_font(default_font)
             return default_font
@@ -87,8 +72,9 @@ def setup_fonts():
         logger.error(f"Błąd czcionek: {e}")
         return None
 
+
 def create_button_theme(color):
-    """Tworzy unikalny motyw kolorystyczny dla pojedynczego przycisku[cite: 12]."""
+    """Tworzy motyw dla przycisków funkcyjnych."""
     with dpg.theme() as btn_theme:
         with dpg.theme_component(dpg.mvButton):
             dpg.add_theme_color(dpg.mvThemeCol_Button, color)

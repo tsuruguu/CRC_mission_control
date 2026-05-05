@@ -63,26 +63,23 @@ class RocketSimulator:
         return strain
 
     def generate_frame(self):
-        """Tworzy ramkę CSV zgodną z TelemetryParser."""
-        strain = self.update_physics()
         self.frame_id += 1
-
-        # Konstrukcja ramki: ID;STATE;ACC_X;ACC_Y;ACC_Z;GYR_X;GYR_Y;GYR_Z;MAG_X;MAG_Y;MAG_Z;ALT;LAT;LON;TEMP;VOLT;CURR;STRAIN;P;R;Y
+        # Musi być dokładnie 21 wartości rozdzielonych średnikiem
         frame = [
-            str(self.frame_id),
-            self.state,
-            "0.1", "0.2", str(round(9.8 + (self.velocity * 0.1), 2)),  # ACC
-            "0.01", "0.01", "0.01",  # GYR
-            "120", "45", "10",  # MAG
-            str(round(self.altitude, 2)),
-            "50.06", "19.94",  # GPS (Kraków AGH)[cite: 1]
-            str(round(20.0 + math.sin(time.time()) * 2, 2)),  # TEMP (Bio)[cite: 1]
-            str(round(self.voltage, 2)),
-            "0.5",  # CURR
-            str(round(strain, 2)),
-            str(round(self.pitch, 2)),
-            str(round(self.roll % 360, 2)),
-            str(round(self.yaw, 2))
+            str(int(self.frame_id)),  # 1. ID (musi być INT)
+            str(self.state),  # 2. STATE
+            "0.0", "0.0", "9.8",  # 3,4,5. ACC
+            "0.0", "0.0", "0.0",  # 6,7,8. GYR
+            "0.0", "0.0", "0.0",  # 9,10,11. MAG
+            str(round(self.altitude, 2)),  # 12. ALT
+            "50.06", "19.94",  # 13,14. GPS
+            "20.0",  # 15. TEMP
+            str(round(self.voltage, 2)),  # 16. VOLT
+            "0.5",  # 17. CURR
+            "0.0",  # 18. STRAIN
+            str(round(self.pitch, 2)),  # 19. PITCH
+            str(round(self.roll, 2)),  # 20. ROLL
+            str(round(self.yaw, 2))  # 21. YAW
         ]
         return ";".join(frame)
 
@@ -105,5 +102,5 @@ class RocketSimulator:
 
 if __name__ == "__main__":
     # Upewnij się, że port zgadza się z Twoim mostkiem!
-    sim = RocketSimulator(port='/tmp/virtualCOM1')
+    sim = RocketSimulator(port='/dev/ttys003')
     sim.run()

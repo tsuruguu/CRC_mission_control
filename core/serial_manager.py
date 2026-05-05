@@ -4,6 +4,8 @@ import threading
 import queue
 import time
 import logging
+import glob
+import sys
 
 from core.data_types import ConnectionStatus
 
@@ -23,8 +25,21 @@ class SerialManager:
         self._last_stat_time = time.time()
 
     def scan_ports(self):
-        """Zwraca listę dostępnych portów COM/USB[cite: 3]."""
-        return [port.device for port in serial.tools.list_ports.comports()]
+        """Zwraca listę portów, uwzględniając wirtualne porty na macOS."""
+        # Standardowe skanowanie sprzętowe
+        ports = [port.device for port in serial.tools.list_ports.comports()]
+
+        # Dodatek dla macOS: szukanie portów stworzonych przez socat
+        if sys.platform.startswith('darwin'):
+            # Szukamy wzorca /dev/ttys* (standard dla PTY na Macu)
+            # Możesz też dodać /dev/cu.* jeśli socat takowe stworzy
+            virtual_ptys = glob.glob('/dev/ttys[0-9][0-9][0-9]')
+            for p in virtual_ptys:
+                if p not in ports:
+                    ports.append(p)
+
+        self.logger.info(f"Scanned ports: {ports}")
+        return ports
 
     def connect(self, port, baudrate=115200):
         """Inicjalizuje połączenie z STM32/LoRa."""

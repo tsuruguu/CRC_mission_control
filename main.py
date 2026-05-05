@@ -22,6 +22,10 @@ class MissionControlApp:
         self.terminal = None
         self.payload_mgr = None
 
+        self.raw_feed_buffer = []
+
+        self.terminal_raw = TerminalComponent("raw_telemetry_feed", "raw_feed_container")
+
         # Setup DPG[cite: 12]
         dpg.create_context()
         theme.apply_skylink_theme()
@@ -36,15 +40,20 @@ class MissionControlApp:
         self.layout.create_layout()
         self.payload_mgr = PayloadManager("temp_plot_series")
 
-        # Inicjalizacja terminala i podpięcie loggera[cite: 4, 11]
         self.terminal = TerminalComponent(self.layout.terminal_id, "terminal_container")
+        self.terminal_raw = TerminalComponent("raw_telemetry_feed", "raw_feed_container")
+        self.terminal_cmd = TerminalComponent("command_console", "command_console_container")
+
         self.logger.add_ui_handler(self.terminal.append)
 
         # Podpięcie callbacków do przycisków[cite: 14]
         dpg.configure_item("scan_btn", callback=self._on_scan)
         dpg.configure_item("connect_btn", callback=self._on_connect)
         dpg.configure_item("send_btn", callback=self._on_send)
-        dpg.configure_item("clear_btn", callback=lambda: self.terminal.clear())
+        dpg.configure_item("cmd_input", callback=self._on_send, on_enter=True)
+
+        dpg.configure_item("clear_raw_btn", callback=self.terminal_raw.clear)
+        dpg.configure_item("clear_cmd_btn", callback=self.terminal_cmd.clear)
 
         # Przyciski krytyczne[cite: 1]
         dpg.configure_item("arm_btn", callback=lambda: self._send_cmd("ARM"))
@@ -72,19 +81,62 @@ class MissionControlApp:
             else:
                 self.logger.error("Failed to connect!")
 
+    # main.py - Poprawione metody klasy MissionControlApp
+
     def _on_send(self):
-        """Wysyłanie ręcznej komendy[cite: 11]."""
+        """Wysyła komendę, czyści pole i przywraca fokus kursora."""
         cmd = dpg.get_value("cmd_input")
+        if not cmd.strip():
+            return
+
+        # Wywołanie metody wysyłania
         if self._send_cmd(cmd):
             dpg.set_value("cmd_input", "")
+        else:
+            self.logger.error(f"Nie udało się wysłać: {cmd} (Brak połączenia?)")
+
+        # Przywrócenie fokusu, by móc pisać dalej bez klikania myszką
+        dpg.focus_item("cmd_input")
 
     def _send_cmd(self, cmd):
-        """Logika wysyłania danych do rakiety[cite: 3, 11]."""
+        """Logika wysyłania danych przez port szeregowy[cite: 26]."""
         if self.serial.send_data(cmd):
             StatusIndicator.blink_tx()
-            self.logger.info(f"Sent command: {cmd}")
+            self.logger.info(f"Sent: {cmd}")
+            self._log_command(f"TX > {cmd}")
             return True
         return False
+
+    def _log_raw(self, text):
+        """Logowanie surowych danych i przewijanie kontenera[cite: 14]."""
+        current_val = dpg.get_value("raw_telemetry_feed")
+        lines = (current_val + "\n" + text).split('\n')
+        dpg.set_value("raw_telemetry_feed", "\n".join(lines[-50:]))
+
+        if dpg.get_value("raw_autoscroll_check"):
+            try:
+                # Przewijamy kontener okna, nie pole tekstowe[cite: 14]
+                dpg.set_y_scroll("raw_feed_container", -1.0)
+            except:
+                pass
+
+    def _append_to_feed(self, text):
+        """Dodaje nową linię do panelu TELEMETRY FEED w zakładce COMMUNICATION."""
+        self.raw_feed_buffer.append(text)
+
+        # Trzymamy tylko 100 ostatnich linii, żeby nie obciążać aplikacji
+        if len(self.raw_feed_buffer) > 100:
+            self.raw_feed_buffer.pop(0)
+
+        try:
+            # Wpisz tekst do pola
+            dpg.set_value("raw_telemetry_feed", "\n".join(self.raw_feed_buffer))
+
+            # Autoscroll (przewijanie na sam dół)
+            if dpg.get_value("autoscroll_check"):
+                dpg.set_y_scroll("raw_telemetry_container", -1.0)
+        except Exception:
+            pass
 
     def run(self):
         """Główna pętla aplikacji (Real-time update)[cite: 13, 14]."""
@@ -95,13 +147,19 @@ class MissionControlApp:
         self.logger.info("Mission Control Started")
 
         while dpg.is_dearpygui_running():
-            # 1. Przetwarzanie kolejki telemetrii[cite: 2, 3]
             while not self.serial.raw_queue.empty():
                 raw_line = self.serial.raw_queue.get()
-                frame = self.parser.parse_line(raw_line)
 
+                # 1. Zapis do pliku (logowanie osobne)
+                self.logger.log_raw_frame(raw_line)
+
+                # 2. Wyświetlanie w UI z poprawionym scrollem
+                self.terminal_raw.append(f"RX > {raw_line}")
+
+                # 3. Parsowanie (Twoja dotychczasowa logika)
+                frame = self.parser.parse_line(raw_line)
                 if frame:
-                    # Logowanie i błysk RX[cite: 4, 11]
+                    self.layout.navball.update(frame.pitch, frame.roll, frame.yaw)
                     self.logger.log_telemetry(frame)
                     StatusIndicator.blink_rx()
 
@@ -128,6 +186,31 @@ class MissionControlApp:
         self.logger.info("Mission Control Session Ended")  # <--- DODAJ TO[cite: 21]
         self.serial.disconnect()
         dpg.destroy_context()
+
+    def _log_raw(self, text):
+        """Loguje surową telemetrię i przewija RAW FEED."""
+        current_val = dpg.get_value("raw_telemetry_feed")
+        lines = (current_val + "\n" + text).split('\n')
+        dpg.set_value("raw_telemetry_feed", "\n".join(lines[-50:]))
+
+        if dpg.get_value("raw_autoscroll_check"):
+            try:
+                # Przewijanie do aktualnego maksimum kontenera
+                dpg.set_y_scroll("raw_feed_container", dpg.get_y_scroll_max("raw_feed_container"))
+            except:
+                pass
+
+    def _log_command(self, text):
+        """Loguje komendy i przewija COMMAND CONSOLE."""
+        current_val = dpg.get_value("command_console")
+        dpg.set_value("command_console", current_val + "\n" + text)
+
+        if dpg.get_value("cmd_autoscroll_check"):
+            try:
+                # Przewijanie do aktualnego maksimum kontenera
+                dpg.set_y_scroll("command_console_container", dpg.get_y_scroll_max("command_console_container"))
+            except:
+                pass
 
 
 if __name__ == "__main__":

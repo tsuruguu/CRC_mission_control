@@ -4,6 +4,9 @@ import ui.theme as theme
 from collections import deque
 import numpy as np
 import time
+import logging
+
+logger = logging.getLogger("MissionControl")
 
 
 class StatusIndicator:
@@ -34,18 +37,16 @@ class TerminalComponent:
         self.tag = item_tag
         self.parent_tag = parent_tag          # PRZYPISZ go do instancji
         self.buffer = []
-        self.max_lines = 1000
+        self.max_lines = 500
 
-    def append(self, text: str, level: str = "INFO"):
-        new_line = f"[{level}] {text}"
-        self.buffer.append(new_line)
+    def append(self, text: str, level=None):
+        self.buffer.append(text)
 
         if len(self.buffer) > self.max_lines:
             self.buffer.pop(0)
 
         dpg.set_value(self.tag, "\n".join(self.buffer))
 
-        # KLUCZOWA ZMIANA: Przewijamy kontener (parent), a nie input_text
         if dpg.get_value("autoscroll_check"):
             try:
                 dpg.set_y_scroll(self.parent_tag, -1.0)
@@ -54,10 +55,11 @@ class TerminalComponent:
 
     def clear(self):
         """Czyści całą zawartość okna terminala[cite: 15]."""
-        import logging
-        logging.getLogger("MissionControl").info("User cleared terminal buffer")  # <--- LOG CLEAR[cite: 21]
         self.buffer = []
         dpg.set_value(self.tag, "")
+        # Resetujemy scroll na górę po czyszczeniu
+        dpg.set_y_scroll(self.parent_tag, 0.0)
+        logger.info(f"Terminal {self.tag} cleared")
 
 
 class FlightDataDisplays:
@@ -66,23 +68,19 @@ class FlightDataDisplays:
     @staticmethod
     def update_metrics(alt: float, volt: float, temp: float, strain: float):
         """Aktualizuje liczbowe dane telemetryczne i monitoruje bezpieczeństwo[cite: 1, 11]."""
-        import logging
-        logger = logging.getLogger("MissionControl")
-
         dpg.set_value("alt_display", f"ALTITUDE: {alt:.1f} m")
         dpg.set_value("temp_display", f"PAYLOAD TEMP: {temp:.1f} °C")
-
         dpg.set_value("volt_display", f"VOLTAGE: {volt:.2f} V")
+
+        # Alert napięcia baterii 18650[cite: 1, 4]
         if volt < 3.4:
             dpg.configure_item("volt_display", color=theme.STATUS_RED)
-            # Loguj rzadziej (np. tylko przy pierwszym spadku) lub na poziomie DEBUG
         else:
             dpg.configure_item("volt_display", color=theme.TEXT_MAIN)
 
         if strain > 100.0:
             dpg.configure_item("status_msg_text", color=theme.STATUS_AMBER)
             dpg.set_value("status_msg_text", "HIGH STRAIN DETECTED")
-            # DODAJ TO: Zapis do pliku logów[cite: 21]
             logger.warning(f"KRYTYCZNE NAPRĘŻENIA KONSTRUKCJI: {strain:.2f}")
 
     @staticmethod
@@ -102,6 +100,14 @@ class FlightDataDisplays:
         if strain > 100.0:  # Przykładowy próg wytrzymałości konstrukcji
             dpg.configure_item("status_msg_text", color=theme.STATUS_AMBER)
             dpg.set_value("status_msg_text", "HIGH STRAIN DETECTED")
+
+    @staticmethod
+    def update_state(state_enum):
+        """Aktualizuje tekstowy opis stanu misji[cite: 9]."""
+        try:
+            dpg.set_value("state_display", f"STATE: {state_enum.value}")
+        except:
+            pass
 
 
 class PayloadManager:
